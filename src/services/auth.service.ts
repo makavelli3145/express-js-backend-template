@@ -21,58 +21,58 @@ const createCookie = (tokenData: TokenData): string => {
 @Service()
 export class AuthService {
   public async signup(userData: User): Promise<User> {
-    const { email, password } = userData;
+    const { id_number, pinCode } = userData;
 
     const { rows: findUser } = await pg.query(
       `
     SELECT EXISTS(
       SELECT
-        "email"
+        "id_number"
       FROM
         users
       WHERE
-        "email" = $1
+        "id_number" = $1
     )`,
-      [email],
+      [id_number],
     );
-    if (findUser[0].exists) throw new HttpException(409, `This email ${userData.email} already exists`);
+    if (findUser[0].exists) throw new HttpException(409, `This id_number ${userData.id_number} already exists`);
 
-    const hashedPassword = await hash(password, 10);
+    const hashedpinCode = await hash(pinCode, 10);
     const { rows: signUpUserData } = await pg.query(
       `
       INSERT INTO
         users(
-          "email",
-          "password"
+          "id_number",
+          "pinCode"
         )
       VALUES ($1, $2)
-      RETURNING "email", "password"
+      RETURNING "id_number", "pinCode"
       `,
-      [email, hashedPassword],
+      [id_number, hashedpinCode],
     );
 
     return signUpUserData[0];
   }
 
   public async login(userData: User): Promise<{ cookie: string; findUser: User }> {
-    const { email, password } = userData;
+    const { id_number, pinCode } = userData;
 
     const { rows, rowCount } = await pg.query(
       `
       SELECT
-        "email",
-        "password"
+        "id_number",
+        "pinCode"
       FROM
         users
       WHERE
-        "email" = $1
+        "id_number" = $1
     `,
-      [email],
+      [id_number],
     );
-    if (!rowCount) throw new HttpException(409, `This email ${email} was not found`);
+    if (!rowCount) throw new HttpException(409, `This id_number ${id_number} was not found`);
 
-    const isPasswordMatching: boolean = await compare(password, rows[0].password);
-    if (!isPasswordMatching) throw new HttpException(409, "You're password not matching");
+    const ispinCodeMatching: boolean = await compare(pinCode, rows[0].pinCode);
+    if (!ispinCodeMatching) throw new HttpException(409, "You're pinCode not matching");
 
     const tokenData = createToken(rows[0]);
     const cookie = createCookie(tokenData);
@@ -80,21 +80,21 @@ export class AuthService {
   }
 
   public async logout(userData: User): Promise<User> {
-    const { email, password } = userData;
+    const { id_number, pinCode } = userData;
 
     const { rows, rowCount } = await pg.query(
       `
     SELECT
-        "email",
-        "password"
+        "id_number",
+        "pinCode"
       FROM
         users
       WHERE
-        "email" = $1
+        "id_number" = $1
       AND
-        "password" = $2
+        "pinCode" = $2
     `,
-      [email, password],
+      [id_number, pinCode],
     );
     if (!rowCount) throw new HttpException(409, "User doesn't exist");
 
