@@ -6,6 +6,7 @@ import pg from '@database';
 import { HttpException } from '@exceptions/httpException';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
+import { Device } from '@interfaces/device.interface';
 
 const createToken = (user: User): TokenData => {
   const dataStoredInToken: DataStoredInToken = { id: user.uuid};
@@ -25,6 +26,15 @@ export class AuthService {
   }
   async createDevice(user_id: number):Promise<string | NodeJS.ErrnoException> {
     throw new Error('Method not implemented.');
+  }
+
+  public async findDeviceByKey(deviceKey: string): Promise<Device> {
+    const { rows } = await pg.query(
+      `SELECT * FROM devices WHERE "deviceKey" = $1`,
+      [deviceKey],
+    );
+
+    return rows[0];
   }
   async idExists(id_number: string): Promise<boolean | number | NodeJS.ErrnoException> {
     throw new Error('Method not implemented.');
