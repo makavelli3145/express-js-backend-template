@@ -1,5 +1,6 @@
 export interface User {
-  id?: number;
+  uuid: string;
   id_number: string;
   pinCode: string;
+  name: string;
 }

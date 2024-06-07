@@ -8,7 +8,7 @@ import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
 
 const createToken = (user: User): TokenData => {
-  const dataStoredInToken: DataStoredInToken = { id: user.id };
+  const dataStoredInToken: DataStoredInToken = { id: user.uuid};
   const expiresIn: number = 60 * 60;
 
   return { expiresIn, token: sign(dataStoredInToken, SECRET_KEY, { expiresIn }) };
@@ -20,6 +20,15 @@ const createCookie = (tokenData: TokenData): string => {
 
 @Service()
 export class AuthService {
+  createUser(userData: User): Promise<number | NodeJS.ErrnoException> {
+    throw new Error('Method not implemented.');
+  }
+  async createDevice(user_id: number):Promise<string | NodeJS.ErrnoException> {
+    throw new Error('Method not implemented.');
+  }
+  async idExists(id_number: string): Promise<boolean | number | NodeJS.ErrnoException> {
+    throw new Error('Method not implemented.');
+  }
   public async signup(userData: User): Promise<User> {
     const { id_number, pinCode } = userData;
 
