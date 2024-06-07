@@ -1,5 +1,5 @@
-# NodeJS Version 16
-FROM node:16.18-buster-slim
+# NodeJS Version 20.11.1
+FROM node:20.11.1-buster-slim
 
 # Copy Dir
 COPY . ./app
@@ -8,7 +8,7 @@ COPY . ./app
 WORKDIR /app
 
 # Install Node Package
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # Set Env
 ENV NODE_ENV development
