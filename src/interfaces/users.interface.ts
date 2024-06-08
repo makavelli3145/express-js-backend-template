@@ -1,6 +1,6 @@
 export interface User {
-  uuid: string;
-  id_number: string;
+  idNumber: string;
+  roleId:number;
   pinCode: string;
   name: string;
 }

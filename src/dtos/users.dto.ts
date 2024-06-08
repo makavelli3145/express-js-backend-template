@@ -1,7 +1,14 @@
-import { IsEmail, IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
+import { IsEmail, IsString, IsNotEmpty, MinLength, MaxLength, IS_LENGTH } from 'class-validator';
 
 export class CreateUserDto {
-  @IsEmail()
+  @IsString()
+  @IsNotEmpty()
+  public deviceKey: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(13)
+  @MaxLength(13)
   public idNum: string;
 
   @IsString()
