@@ -7,6 +7,35 @@ import { uuid } from 'uuidv4';
 
 @Service()
 export class AuthService {
+  async isCorrectPin(userData: User): Promise<boolean | NodeJS.ErrnoException> {
+    const { idNumber, name, pinCode } = userData;
+
+    try {
+      const userId = await this.getUserId(userData).then(userId => {
+        if (typeof userId === 'number') {
+          return this.isValidPin(userId, pinCode);
+        }
+      });
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async getUserId(userData: User): Promise<number | boolean | NodeJS.ErrnoException> {
+    const { idNumber, name, pinCode } = userData;
+
+    return await pg
+      .query('SELECT id FROM users WHERE idNumber = $1', [idNumber])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0]?.id;
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
+  }
+
   async createUser(userData: User): Promise<number | boolean | NodeJS.ErrnoException> {
     try {
       const { idNumber, name, pinCode } = userData;

@@ -13,10 +13,21 @@ export class AuthController {
       const userData: User = req.body;
       this.authService.idExists(userData.idNumber).then(userId => {
         if (userId) {
-          this.authService.createDevice(userId)
-            .then(deviceId => res.status(200)
-              .json({ deviceId: deviceId, message: "device added to user account" })
-            );
+          if(typeof userId === 'number'){
+            // Confirm if the the pin is correct before creating a device
+            if(this.authService.isCorrectPin(userData)){
+              this.authService.createDevice(userId)
+            }else{
+              res.status(401).send("Your ID or password is wrong");
+            }
+          }
+
+          if(typeof userId === 'number'){
+            this.authService.createDevice(userId)
+              .then(deviceId => res.status(200)
+                .json({ deviceId: deviceId, message: "device added to user account" })
+              );
+            }
         } else {
           this.authService.createUser(userData).then(userId => {
             if (typeof userId === 'number') {
