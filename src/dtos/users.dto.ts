@@ -5,10 +5,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   public deviceKey: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(13)
-  @MaxLength(13)
   public idNum: string;
 
   @IsString()

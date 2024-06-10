@@ -2,7 +2,6 @@ import { Service } from 'typedi';
 import pg from '@database';
 import { HttpException } from '@exceptions/httpException';
 import { User } from '@interfaces/users.interface';
-import { Device } from '@interfaces/device.interface';
 import { uuid } from 'uuidv4';
 
 @Service()
@@ -42,10 +41,11 @@ export class AuthService {
       const roleId = this.getUserRoleIdFromRoleName('user');
       if (typeof roleId === 'number') {
         return await pg
-          .query(`INSERT INTO Users (id_number , role_id , pin , name) VALUES ($1, $2, $3, $4) RETURNING id`, [idNumber, roleId, pinCode, name])
+          .query(`INSERT INTO users (id_number , role_id , pin , name) VALUES ($1, $2, $3, $4) RETURNING id`,
+           [idNumber, roleId, pinCode, name])
           .then(result => {
             if (result.rowCount > 0) {
-              return result.rows[0].id;
+              return result.rows[0]?.id;
             } else {
               return false;
             }
@@ -75,10 +75,10 @@ export class AuthService {
   public async createDevice(userId: number): Promise<string | boolean | NodeJS.ErrnoException> {
     const deviceKey: string = uuid();
     return await pg
-      .query(`INSERT INTO Devices ("device_uuid","user_id") VALUES ($1, $2) RETURNING id`, [deviceKey, userId])
+      .query(`INSERT INTO devices (device_uuid, user_id) VALUES ($1, $2) RETURNING id`, [deviceKey, userId])
       .then(result => {
         if (result.rowCount > 0) {
-          return deviceKey;
+          return result.rows[0]?.id;
         } else {
           return false;
         }
@@ -88,17 +88,7 @@ export class AuthService {
 
   async isValidPin(userId: number, userPin: string): Promise<boolean> {
     return await pg
-      .query(
-        `
-      SELECT
-        pin
-      FROM
-        users
-      WHERE
-        id = $1;
-    `,
-        [userId],
-      )
+      .query(`SELECT pin FROM users WHERE id = $1`,[userId])
       .then(result => {
         return userPin === result?.rows[0]?.pin;
       })
@@ -109,15 +99,7 @@ export class AuthService {
       .query(
         `
     SELECT EXISTS(
-      SELECT
-        "id"
-      FROM
-        users
-      WHERE
-        "id_number" = $1
-    )`,
-        [id_number],
-      )
+      SELECT id FROM users WHERE id_number = $1)`,[id_number],)
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0]?.id;
@@ -131,20 +113,8 @@ export class AuthService {
   public async logout(userData: User): Promise<User> {
     const { idNumber, pinCode } = userData;
 
-    const { rows, rowCount } = await pg.query(
-      `
-    SELECT
-        "id_number",
-        "pinCode"
-      FROM
-        users
-      WHERE
-        "id_number" = $1
-      AND
-        "pinCode" = $2
-    `,
-      [idNumber, pinCode],
-    );
+    const { rows, rowCount } = await pg.query(`SELECT id_number, pin FROM users WHERE
+        id_number = $1 AND pin = $2`,[idNumber, pinCode],);
     if (!rowCount) throw new HttpException(409, "User doesn't exist");
 
     return rows[0];
