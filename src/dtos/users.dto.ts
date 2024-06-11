@@ -1,14 +1,13 @@
 import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+  Validate,
+  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-  ValidationArguments,
-  IsString,
-  MinLength,
-  MaxLength,
-  Validate,
-  IsNotEmpty,
 } from 'class-validator';
-import * as querystring from 'querystring';
 
 @ValidatorConstraint({ name: 'isValidSouthAfricanId', async: false })
 class IsValidSouthAfricanId implements ValidatorConstraintInterface {
@@ -28,7 +27,7 @@ class IsValidSouthAfricanId implements ValidatorConstraintInterface {
     const birthYear = parseInt(century + birthdate.substr(0, 2));
     const age = currentYear - birthYear;
 
-    if (age > 110) {
+    if (age > 130) {
       return false; // Person is older than 110 years
     }
 
@@ -42,28 +41,36 @@ class IsValidSouthAfricanId implements ValidatorConstraintInterface {
     }
 
     // Check last digit (check bit)
-    const lastDigit = parseInt(idNumber.charAt(12));
     const digits = idNumber.substring(0, 12).split('').map(Number);
-    const checksum =
-      (digits[0] * 2 +
-        digits[1] * 3 +
-        digits[2] * 4 +
-        digits[3] * 5 +
-        digits[4] * 6 +
-        digits[5] * 7 +
-        digits[6] * 8 +
-        digits[7] * 9 +
-        digits[8] * 10 +
-        digits[9] * 1 +
-        digits[10] * 2) %
-      11;
-
-    return (checksum < 10 ? checksum : 0) === lastDigit;
+    return luhnsChecksum(digits);
   }
 
   defaultMessage(args: ValidationArguments) {
     return 'Invalid South African ID number';
   }
+}
+
+function luhnsChecksum(digitArray: number[]): boolean {
+  let result: number = 0;
+  digitArray.forEach((digit, index) => {
+    if (index === digitArray.length - 1) {
+      if (digit * 2 > 10 && index % 2 === 0) {
+        const stringDigit = digit.toString();
+        const firstDigit = parseInt(stringDigit.charAt(0));
+        const secondDigit = parseInt(stringDigit.charAt(1));
+        result += firstDigit + secondDigit;
+      } else {
+        result += digit;
+      }
+    }
+    let remainder = result % 10;
+    if (remainder > 0) {
+      result = 10 - remainder;
+    } else {
+      result = remainder;
+    }
+  });
+  return result === digitArray[digitArray.length - 1];
 }
 
 export class CreateUserDto {
