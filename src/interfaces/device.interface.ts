@@ -1,4 +1,5 @@
 export interface Device {
-    id?: number;
-    deviceKey: string;
-  }
+  user_id: number;
+  device_uuid: string;
+  id?: number;
+}
