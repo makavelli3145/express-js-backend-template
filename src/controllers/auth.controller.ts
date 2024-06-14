@@ -58,7 +58,7 @@ export class AuthController {
     }
   };
 
-  public login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
     } catch (error) {
       next(error);
@@ -67,11 +67,6 @@ export class AuthController {
 
   public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userData: User = req.user;
-      const logOutUserData: User = await this.authService.logout(userData);
-
-      res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
-      res.status(200).json({ data: logOutUserData, message: 'logout' });
     } catch (error) {
       next(error);
     }
