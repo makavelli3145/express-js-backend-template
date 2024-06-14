@@ -1,6 +1,7 @@
 import {
   IsNotEmpty,
   IsString,
+  IsNumber,
   MaxLength,
   MinLength,
   Validate,
@@ -79,16 +80,18 @@ export class CreateUserDto {
     message: 'Invalid South African ID number',
   })
   @IsNotEmpty()
-  public idNumber: string;
+  public id_number: string;
 
   @IsString()
   @MinLength(6)
   @IsNotEmpty()
   @MaxLength(6)
-  public pinCode: string;
+  public pin: string;
 
   @IsString()
   @IsNotEmpty()
   public name: string;
-}
 
+  @IsNumber()
+  public id?: number;
+}
