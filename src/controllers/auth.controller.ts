@@ -78,6 +78,21 @@ export class AuthController {
     }
   };
 
+  public deregisterDevice = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+    const reqDevice : Device = req.body;
+    try {
+      this.deviceService.deleteDevice(reqDevice).then((device)=>{
+        if(device){
+          res.status(200).send(device)
+        }else{
+          res.status(500).send('Device could not be deleted');
+        }
+      })
+    }catch(error){
+      next(error)
+    }
+  }
+
   public deRegisterUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const user: User = req.body;
     try {
@@ -87,7 +102,7 @@ export class AuthController {
         } else {
           res.status(401).send('user could not be deleted at this time');
         }
-      });
+      })
     } catch (error) {
       next(error);
     }
