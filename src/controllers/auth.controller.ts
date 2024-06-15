@@ -78,8 +78,16 @@ export class AuthController {
     }
   };
 
-  public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+  public deRegisterUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const user: User = req.body;
     try {
+      this.userService.deleteUser(user.id).then(result => {
+        if (result) {
+          res.status(200).send('user deleted');
+        } else {
+          res.status(401).send('user could not be deleted at this time');
+        }
+      });
     } catch (error) {
       next(error);
     }
