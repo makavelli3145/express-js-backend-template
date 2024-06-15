@@ -12,6 +12,9 @@ import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
 import { Routes } from '@interfaces/routes.interface';
 import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import session from 'express-session';
+import { createClient } from 'redis';
+import RedisStore from 'connect-redis';
 
 export class App {
   public app: express.Application;
@@ -51,6 +54,26 @@ export class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+    this.app.use(session(this.initializeSession()));
+  }
+
+  private initializeSession() {
+    let redisClient = createClient();
+    redisClient.connect().catch(console.error);
+
+    let redisStore = new RedisStore({
+      client: redisClient,
+      prefix: 'solace-api:',
+    });
+    const sess: session.SessionOptions = {
+      store: redisStore,
+      secret: '+Uly7Ezx/VkukgCzRpiicVF2JGtZnK5eoaeIQuDADyIY7lEwnL1FsKK5ptjhC/53',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { secure: this.env === 'production' },
+    };
+
+    return sess;
   }
 
   private initializeRoutes(routes: Routes[]) {

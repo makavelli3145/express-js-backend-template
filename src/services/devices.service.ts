@@ -32,4 +32,20 @@ export class DevicesService {
       })
       .catch(err => err);
   }
+
+  async findDeviceById(id: number) {
+    const sql = `
+      SELECT * FROM devices where id = $1;
+    `;
+    return await pg
+      .query(sql, [id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
+  }
 }
