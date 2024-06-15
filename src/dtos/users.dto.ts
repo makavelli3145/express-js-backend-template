@@ -8,6 +8,7 @@ import {
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
+  IsUUID,
 } from 'class-validator';
 
 @ValidatorConstraint({ name: 'isValidSouthAfricanId', async: false })
@@ -99,4 +100,17 @@ export class DeleteUserDto extends CreateUserDto {
   public id: number;
 }
 
-export class LoginUserDto extends CreateUserDto {}
+export class LoginUserDto {
+  @IsNotEmpty()
+  @IsNumber()
+  public id: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  public user_id: number;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID(4)
+  public device_uuid: string;
+}
