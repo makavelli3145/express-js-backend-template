@@ -1,4 +1,3 @@
-import { Router } from 'express';
 import { Container } from 'typedi';
 import { Request, Response, NextFunction } from 'express';
 import { RequestWithUser } from '@interfaces/auth.interface';
