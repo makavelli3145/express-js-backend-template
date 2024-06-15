@@ -50,7 +50,7 @@ export class UserService {
   }
 
   public async createUser(userData: User): Promise<User | boolean | NodeJS.ErrnoException> {
-    const { idNumber, roleId, pinCode, name } = userData;
+    const { id_number, role_id, pin, name } = userData;
 
     const sql: string = `INSERT INTO
             users (id_number, role_id, pin, name)
@@ -58,7 +58,7 @@ export class UserService {
                 ($1, $2, $3, $4)`;
 
     return await pg
-      .query(sql, [idNumber, roleId, pinCode, name])
+      .query(sql, [id_number, role_id, pin, name])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
@@ -71,10 +71,10 @@ export class UserService {
   }
 
   public async updateUser(user: User): Promise<User | boolean | NodeJS.ErrnoException> {
-    const { id, idNumber, roleId, pinCode, name } = user;
+    const { id, id_number, role_id, pin, name } = user;
     const sql = `UPDATE users SET id_number = $1, role_id = $2, name = $3, pin = $4 where id = $5`;
     return await pg
-      .query(sql, [idNumber, roleId, name, pinCode, id])
+      .query(sql, [id_number, role_id, name, pin, id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
