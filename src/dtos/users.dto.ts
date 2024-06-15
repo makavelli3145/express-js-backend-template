@@ -91,7 +91,12 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   public name: string;
-
-  @IsNumber()
-  public id?: number;
 }
+
+export class DeleteUserDto extends CreateUserDto {
+  @IsNotEmpty()
+  @IsNumber()
+  public id: number;
+}
+
+export class LoginUserDto extends CreateUserDto {}
