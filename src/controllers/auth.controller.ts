@@ -102,8 +102,7 @@ export class AuthController {
         } else {
           res.status(401).send('user could not be deleted at this time');
         }
-      });
->>>>>>> origin/develop
+      })
     } catch (error) {
       next(error);
     }
