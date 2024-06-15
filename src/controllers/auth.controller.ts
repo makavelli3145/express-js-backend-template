@@ -78,8 +78,16 @@ export class AuthController {
     }
   };
 
-  public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+  public deregisterDevice = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+    const reqDevice : Device = req.body;
     try {
+      this.deviceService.deleteDevice(reqDevice).then((device)=>{
+        if(device){
+          res.status(200).send(device)
+        }else{
+          res.status(500).send('Device could not be deleted');
+        }
+      })
     } catch (error) {
       next(error);
     }
