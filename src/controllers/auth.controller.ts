@@ -59,15 +59,15 @@ export class AuthController {
   };
 
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const user: User = req.body.user;
-    const device: Device = req.body.device;
+    const reqDevice: Device = req.body;
     try {
-      this.deviceService.findDeviceById(device.id).then(result => {
-        if (result) {
-          const isValidDevice = result.device_uuid === device.device_uuid;
+      this.deviceService.findDeviceById(reqDevice.id).then(device => {
+        if (device) {
+          const isValidDevice = device.device_uuid === reqDevice.device_uuid;
           if (isValidDevice) {
-            req.session.userId = user.id;
-            res.status(200).send('Login successful');
+            const user_id = device.user_id;
+            req.session.userId = user_id;
+            this.userService.findUserById(user_id).then((user: User) => res.status(200).send(user));
           } else {
             res.status(401).send('Invalid username or password');
           }
