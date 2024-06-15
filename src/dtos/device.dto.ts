@@ -17,7 +17,7 @@ export class DeleteDeviceDto{
 
   @IsString()
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUID(4)
   device_uuid: string;
 
   @IsNotEmpty()
