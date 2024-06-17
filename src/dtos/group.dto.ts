@@ -9,3 +9,9 @@ export class CreateGroupDto {
   @IsNotEmpty()
   public created_by_user_id: number;
 }
+
+export class UpdateGroupDto extends CreateGroupDto {
+  @IsNotEmpty()
+  @IsNumber()
+  public id: number;
+}

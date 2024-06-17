@@ -20,4 +20,19 @@ export class GroupController {
       next(error);
     }
   };
+
+  public updateGroup = (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const reqGroup: Group = req.body;
+      this.groupService.updateGroup(reqGroup).then(result => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res.status(500).send('a group could not be updated at this time');
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
