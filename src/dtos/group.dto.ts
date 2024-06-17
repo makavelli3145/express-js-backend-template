@@ -10,15 +10,7 @@ export class CreateGroupDto {
   public created_by_user_id: number;
 }
 
-export class DeleteGroupDto{
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  created_by_user_id: number;
-
+export class DeleteGroupDto extends CreateGroupDto{
   @IsNumber()
   @IsNotEmpty()
   id: number;
