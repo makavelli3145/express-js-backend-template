@@ -1,7 +1,6 @@
 import { Service } from 'typedi';
 import pg from '@database';
 import { HttpException } from '@exceptions/httpException';
-import { logger } from '@utils/logger';
 
 @Service()
 export class RolesService {
