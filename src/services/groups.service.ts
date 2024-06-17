@@ -18,4 +18,21 @@ export class GroupsService {
       })
       .catch(error => error);
   };
+
+  public updateGroup = async (group: Group): Promise<Group | boolean | NodeJS.ErrnoException> => {
+    const { id, name, created_by_user_id } = group;
+    const sql = `
+      UPDATE groups SET name = $1, created_by_user_id = $2 WHERE id = $3;
+    `;
+    return await pg
+      .query(sql, [name, created_by_user_id, id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(error => error);
+  };
 }

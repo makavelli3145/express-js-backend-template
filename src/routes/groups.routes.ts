@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { GroupController } from '@controllers/group.controller';
-import { CreateGroupDto } from '@dtos/group.dto';
+import { CreateGroupDto, UpdateGroupDto } from '@dtos/group.dto';
 import { Routes } from '@interfaces/routes.interface';
 import { ValidationMiddleware } from '@middlewares/validation.middleware';
 
@@ -14,5 +14,6 @@ export class GroupRoute implements Routes {
 
   private initializeRoutes() {
     this.router.post('/groups/create', ValidationMiddleware(CreateGroupDto), this.group.createGroup);
+    this.router.patch('/groups/update', ValidationMiddleware(UpdateGroupDto), this.group.updateGroup);
   }
 }
