@@ -28,7 +28,7 @@ export class GroupController {
         if (result) {
           res.status(200).json(result);
         } else {
-          res.status(500).send('a group could not be created at this time');
+          res.status(500).send('a group could not be updated at this time');
         }
       });
     } catch (error) {
