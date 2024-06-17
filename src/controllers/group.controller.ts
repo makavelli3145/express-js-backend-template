@@ -28,7 +28,7 @@ export class GroupController {
         if(result){
           res.status(200).json(result);
         }else{
-          res.status(500).send('There was an error with creating a group');
+          res.status(500).send('There was an error with deleting a group');
         }
       })
     }catch(error){

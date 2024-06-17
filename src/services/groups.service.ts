@@ -1,7 +1,6 @@
 import { Service } from 'typedi';
 import pg from '@database';
 import { Group } from '@interfaces/group.interface';
-import {Device} from "@interfaces/device.interface";
 
 @Service()
 export class GroupsService {
