@@ -20,4 +20,19 @@ export class UserGroupController {
       next(error);
     }
   };
+
+  public updateUserGroup = (req: Request, res: Response, next: NextFunction) => {
+    const reqUserGroup = req.body;
+    try{
+      this.userGroupService.updateUserGroup(reqUserGroup).then(result => {
+        if(result){
+          res.status(200).json(result);
+        }else{
+          res.status(500).send('Failed to update userGroup');
+        }
+      });
+    }catch(err){
+      next(err);
+    }
+  };
 }

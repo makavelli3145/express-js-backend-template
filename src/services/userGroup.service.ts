@@ -21,4 +21,18 @@ export class UserGroupService {
       })
       .catch(error => error);
   };
+
+  public updateUserGroup = async (reqUserGroup: UserGroup):Promise<UserGroup | boolean | NodeJS.ErrnoException> =>{
+    const { user_id, group_id, user_group_permissions } = reqUserGroup;
+
+    const sql:string = "UPDATE users_groups SET user_id=$1, user_group_permissions=$2 WHERE group_id=$3";
+      return await pg.query(sql, [user_id, user_group_permissions, group_id])
+        .then(result=>{
+          if(result.rowCount > 0){
+            return result.rowCount[0];
+          }else{
+            return false;
+          }
+      }).catch(err => err);
+    }
 }
