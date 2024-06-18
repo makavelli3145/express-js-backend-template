@@ -15,3 +15,9 @@ export class DeleteGroupDto extends CreateGroupDto{
   @IsNotEmpty()
   id: number;
 }
+
+export class UpdateGroupDto extends CreateGroupDto {
+  @IsNotEmpty()
+  @IsNumber()
+  public id: number;
+}
