@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsObject, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsNumber, isObject, IsObject, IsString, IsUUID } from 'class-validator';
 
 export class DeviceDto {
   @IsNotEmpty()
@@ -30,14 +30,6 @@ export class GroupDto {
 }
 
 export class PushNotificationsDto {
-  @IsNotEmpty()
-  @IsObject()
-  device: DeviceDto;
-
-  @IsNotEmpty()
-  @IsObject()
-  group: GroupDto;
-
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -56,4 +48,16 @@ export class PushNotificationsDto {
 
   @IsNumber()
   id?: number;
+}
+
+export class CreatePushNotificationDto {
+  @IsObject()
+  device: DeviceDto;
+
+  @IsObject()
+  @IsNotEmpty()
+  push_notification: PushNotificationsDto;
+
+  @IsObject()
+  group: GroupDto;
 }

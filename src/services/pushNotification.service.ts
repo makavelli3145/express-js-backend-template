@@ -95,7 +95,9 @@ export class PushNotificationService {
     }
     const valueString = valuesArray.join(',');
     return `
-      INSERT INTO push_notifications (to_device_id, data, title, body, push_notifications_type_id) VALUES ${valueString};
+      INSERT
+      INTO push_notifications (to_device_id, data, title, body, push_notifications_type_id)
+      VALUES ${valueString};
     `;
   };
 }
