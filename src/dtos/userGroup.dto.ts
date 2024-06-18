@@ -11,3 +11,9 @@ export class CreateUserGroupDto {
   @IsNotEmpty()
   public user_group_permissions: number;
 }
+
+export class DeleteUserGroupDto extends CreateUserGroupDto{
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+}
