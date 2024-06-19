@@ -127,7 +127,7 @@ export class PushNotificationService {
     const sql = this.insertPushNotificationJobs(savedPushNotifications, priority);
     let values = [];
     savedPushNotifications.forEach(item => {
-      values = [...values, item, priority];
+      values = [...values, item.id, priority];
     });
     return await pg
       .query(sql, values)
