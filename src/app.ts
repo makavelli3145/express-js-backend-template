@@ -58,7 +58,12 @@ export class App {
   }
 
   private initializeSession() {
-    let redisClient = createClient();
+    let redisClient = createClient({
+      socket: {
+        host: 'redis',
+        port: 6379,
+      },
+    });
     redisClient.connect().catch(console.error);
 
     let redisStore = new RedisStore({
