@@ -13,8 +13,14 @@ export class PushNotificationsController {
       const pushNotification: PushNotification = req.body.push_notifiaction;
       const device: Device = req.body.device;
       this.pushNotificationService.createPushNotification(group, pushNotification, device).then(result => {
-        if (result) {
-          res.status(200).send(result);
+        if (Array.isArray(result)) {
+          this.pushNotificationService.createPushNotificationJob(result).then(result => {
+            if (result) {
+              res.status(200).send(result);
+            } else {
+              res.status(500).send('error creating push notification jobs');
+            }
+          });
         } else {
           res.status(500).send('could not create a push notification');
         }

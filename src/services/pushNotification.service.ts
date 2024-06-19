@@ -3,10 +3,15 @@ import pg from '@database';
 import { Group } from '@interfaces/group.interface';
 import { PushNotification } from '@interfaces/pushNotification.interfact';
 import { Device } from '@interfaces/device.interface';
+import { PushNotificationJob } from '@interfaces/pushNotifcationJob.interface';
 
 @Service()
 export class PushNotificationService {
-  public createPushNotification = async (group: Group, pushNotification: PushNotification, device: Device) => {
+  public createPushNotification = async (
+    group: Group,
+    pushNotification: PushNotification,
+    device: Device,
+  ): Promise<PushNotification[] | Boolean | NodeJS.ErrnoException> => {
     const { id } = group;
     const { title, body, data, push_notification_type_id } = pushNotification;
     let sql = 'SELECt name from push_notification_type where id = $1';
@@ -100,4 +105,39 @@ export class PushNotificationService {
       VALUES ${valueString};
     `;
   };
+
+  private insertPushNotificationJobs = (savedPushNotifcations, priority: number) => {
+    let valuesArray = [];
+    let valueCount = savedPushNotifcations.length;
+    for (let i = 0; i < valueCount; i++) {
+      const value_1 = 1 + i * 2;
+      const value_2 = 2 + i * 2;
+      valuesArray.push(`($${value_1}, $${value_2})`);
+    }
+    const valueString = valuesArray.join(',');
+    return `
+      INSERT
+      INTO push_notifications (push_id, priority)
+      VALUES ${valueString};
+    `;
+  };
+
+  async createPushNotificationJob(savedPushNotifications: PushNotification[]): Promise<PushNotificationJob[] | boolean | NodeJS.ErrnoException> {
+    let priority = 0;
+    const sql = this.insertPushNotificationJobs(savedPushNotifications, priority);
+    let values = [];
+    savedPushNotifications.forEach(item => {
+      values = [...values, item, priority];
+    });
+    return await pg
+      .query(sql, values)
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows;
+        } else {
+          return false;
+        }
+      })
+      .catch(error => error);
+  }
 }
