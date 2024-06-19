@@ -35,4 +35,18 @@ export class UserGroupService {
           }
       }).catch(err => err);
     }
+
+  public deleteUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> =>{
+    const {user_id, group_id, user_group_permissions, id} = reqUserGroup;
+    const sql:string = 'DELETE FROM users_groups WHERE id=$1';
+    return await pg.query(sql, [id]).then(result => {
+      if(result.rowCount > 0){
+        return result.rows[0];
+      }else{
+        return false;
+      }
+    }).catch(err => {
+      return err;
+    });
+  }
 }

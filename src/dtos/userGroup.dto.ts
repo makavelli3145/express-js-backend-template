@@ -14,6 +14,11 @@ export class CreateUserGroupDto {
 }
 
 export class UpdateUserGroupDto extends CreateUserGroupDto{
+    @IsNumber()
+  @IsNotEmpty()
+  id: number;
+}
+export class DeleteUserGroupDto extends CreateUserGroupDto{
   @IsNumber()
   @IsNotEmpty()
   id: number;

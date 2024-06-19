@@ -21,6 +21,7 @@ export class UserGroupController {
     }
   };
 
+
   public updateUserGroup = (req: Request, res: Response, next: NextFunction) => {
     const reqUserGroup = req.body;
     try{
@@ -35,4 +36,20 @@ export class UserGroupController {
       next(err);
     }
   };
+
+  public deleteUserGroup = (req: Request, res: Response, next: NextFunction) =>{
+    try{
+      const reqUserGroup: UserGroup = req.body;
+      this.userGroupService.deleteUserGroup(reqUserGroup).then(result =>{
+        if(result){
+          res.status(200).json(result);
+        }else{
+          res.status(500).send('Could not delete users group');
+        }
+      })
+    }catch(error){
+      next(error);
+    }
+  }
+
 }
