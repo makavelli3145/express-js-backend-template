@@ -8,7 +8,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-    restart: "unless-stopped"
+    restart: unless-stopped
     networks:
       - backend
 
@@ -20,21 +20,21 @@ services:
     ports:
       - "3000:3000"
     environment:
-      POSTGRES_USER: root
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_HOST: pg
       POSTGRES_PORT: 5432
-      POSTGRES_DB: dev
+      POSTGRES_DB: public
+      REDIS_HOST: redis  # Add Redis host environment variable
     volumes:
       - ./:/app
       - /app/node_modules
-    restart: "unless-stopped"
+    restart: unless-stopped
     networks:
       - backend
-    links:
-      - pg
     depends_on:
       - pg
+      - redis  # Ensure server depends on Redis
 
   pg:
     container_name: pg
@@ -42,13 +42,24 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: root
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: dev
+      POSTGRES_DB: public
     volumes:
       # - ./postgresdata:/var/lib/postgresql/data
       - ./src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
-    restart: "always"
+    restart: always
+    networks:
+      - backend
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    restart: always
     networks:
       - backend
 
@@ -58,4 +69,6 @@ networks:
 
 volumes:
   data:
+    driver: local
+  redisdata:
     driver: local
