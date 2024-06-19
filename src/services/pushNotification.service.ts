@@ -117,7 +117,7 @@ export class PushNotificationService {
     const valueString = valuesArray.join(',');
     return `
       INSERT
-      INTO push_notifications (push_id, priority)
+      INTO push_notification_jobs (push_id, priority)
       VALUES ${valueString};
     `;
   };
