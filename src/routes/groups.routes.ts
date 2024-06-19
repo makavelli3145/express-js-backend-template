@@ -14,6 +14,6 @@ export class GroupRoute implements Routes {
 
   private initializeRoutes() {
     this.router.post('/groups/create', ValidationMiddleware(CreateGroupDto), this.group.createGroup);
-    this.router.patch('/groups/update', ValidationMiddleware(UpdateGroupDto), this.group.updateGroup);
+    this.router.put('/groups/update', ValidationMiddleware(UpdateGroupDto), this.group.updateGroup);
   }
 }
