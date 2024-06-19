@@ -21,6 +21,21 @@ export class GroupController {
     }
   };
 
+  public deleteGroup = (req:Request, res:Response, next:NextFunction) =>{
+    try{
+      const group:Group = req.body;
+      this.groupService.deleteGroup(group).then(result=>{
+        if(result){
+          res.status(200).json(result);
+        }else{
+          res.status(500).send('There was an error with deleting a group');
+        }
+      })
+    }catch(error){
+      next(error)
+    }
+  }
+
   public updateGroup = (req: Request, res: Response, next: NextFunction) => {
     try {
       const reqGroup: Group = req.body;
