@@ -3,6 +3,7 @@ import { GroupController } from '@controllers/group.controller';
 import { CreateGroupDto, UpdateGroupDto, DeleteGroupDto } from '@dtos/group.dto';
 import { Routes } from '@interfaces/routes.interface';
 import { ValidationMiddleware } from '@middlewares/validation.middleware';
+import { AuthMiddleware } from '@middlewares/auth.middleware';
 
 export class GroupRoute implements Routes {
   public router = Router();
@@ -13,8 +14,8 @@ export class GroupRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.post('/groups/create', ValidationMiddleware(CreateGroupDto), this.group.createGroup);
-    this.router.delete('/groups/delete', ValidationMiddleware(DeleteGroupDto), this.group.deleteGroup);
-    this.router.put('/groups/update', ValidationMiddleware(UpdateGroupDto), this.group.updateGroup);
+    this.router.post('/groups/create', AuthMiddleware, ValidationMiddleware(CreateGroupDto), this.group.createGroup);
+    this.router.delete('/groups/delete', AuthMiddleware, ValidationMiddleware(DeleteGroupDto), this.group.deleteGroup);
+    this.router.put('/groups/update', AuthMiddleware, ValidationMiddleware(UpdateGroupDto), this.group.updateGroup);
   }
 }

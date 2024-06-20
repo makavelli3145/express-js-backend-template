@@ -3,6 +3,7 @@ import { Routes } from '@interfaces/routes.interface';
 import { ValidationMiddleware } from '@middlewares/validation.middleware';
 import { CreatePushNotificationDto } from '@dtos/pushNotifications.dto';
 import { PushNotificationsController } from '@controllers/pushNotifications.controller';
+import { AuthMiddleware } from '@middlewares/auth.middleware';
 
 export class GroupRoute implements Routes {
   public router = Router();
@@ -13,6 +14,11 @@ export class GroupRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.post('/pushNotifications/create', ValidationMiddleware(CreatePushNotificationDto), this.pushNotifications.createPushNotification);
+    this.router.post(
+      '/pushNotifications/create',
+      AuthMiddleware,
+      ValidationMiddleware(CreatePushNotificationDto),
+      this.pushNotifications.createPushNotification,
+    );
   }
 }
