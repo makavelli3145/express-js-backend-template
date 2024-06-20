@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
 import { Group } from '@interfaces/group.interface';
-import { PushNotification } from '@interfaces/pushNotification.interfact';
+import { PushNotification } from '@interfaces/pushNotification.interface';
 import { PushNotificationService } from '@services/pushNotification.service';
 import { Device } from '@interfaces/device.interface';
 

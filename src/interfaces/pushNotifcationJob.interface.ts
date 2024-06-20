@@ -10,3 +10,16 @@ export interface PushNotificationJob {
   push_id: number;
   id?: number;
 }
+
+export interface PendingPushNotificationJob {
+  id: number;
+  data: object;
+  title: string;
+  body: string;
+  ttl: number;
+  priority: number;
+  mutable_content: boolean;
+  push_token: string;
+  name: string;
+  retry_attempt: number;
+}

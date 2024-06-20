@@ -1,9 +1,9 @@
 import { Service } from 'typedi';
 import pg from '@database';
 import { Group } from '@interfaces/group.interface';
-import { PushNotification } from '@interfaces/pushNotification.interfact';
+import { PushNotification } from '@interfaces/pushNotification.interface';
 import { Device } from '@interfaces/device.interface';
-import { PushNotificationJob } from '@interfaces/pushNotifcationJob.interface';
+import { PendingPushNotificationJob, PushNotificationJob } from '@interfaces/pushNotifcationJob.interface';
 
 @Service()
 export class PushNotificationService {
@@ -134,6 +134,99 @@ export class PushNotificationService {
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows;
+        } else {
+          return false;
+        }
+      })
+      .catch(error => error);
+  }
+
+  async getPendingJobs(priority: number): Promise<PendingPushNotificationJob[] | boolean | NodeJS.ErrnoException> {
+    const sql = `
+      SELECT
+        push_notification_jobs.id,
+        data,
+        title,
+        body,
+        name,
+        ttl,
+        priority,
+        mutable_content,
+        push_token,
+        retry_attempt
+          FROM push_notification_jobs
+            join push_notifications
+                on push_notification_jobs.push_id = push_notifications.id
+            join push_notification_type
+                on push_notifications.push_notification_type_id = push_notification_type.id
+            join devices
+                on push_notifications.to_device_id = devices.id
+            where push_notification_jobs.pending = true and push_notification_type.priority=$1;`;
+
+    return await pg
+      .query(sql, [priority])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows;
+        } else {
+          return false;
+        }
+      })
+      .catch(error => error);
+  }
+
+  async completePendingJob(pendingPushNotificationJob: PendingPushNotificationJob): Promise<PushNotificationJob[] | boolean | NodeJS.ErrnoException> {
+    const { id } = pendingPushNotificationJob;
+    const sql = `UPDATE push_notification_jobs SET pending = false, completed=true WHERE id = $1`;
+    return await pg
+      .query(sql, [id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows;
+        } else {
+          return false;
+        }
+      })
+      .catch(error => error);
+  }
+
+  async failPendingJob(
+    pendingPushNotificationJob: PendingPushNotificationJob,
+    error: string | null = null,
+  ): Promise<PushNotificationJob[] | boolean | NodeJS.ErrnoException> {
+    const { id } = pendingPushNotificationJob;
+    const sql = `
+        UPDATE push_notification_jobs
+            SET
+                pending = false,
+                failed = true,
+                error=$2
+            WHERE id = $1`;
+    return await pg
+      .query(sql, [id, error])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows;
+        } else {
+          return false;
+        }
+      })
+      .catch(error => error);
+  }
+
+  async incrementRetryAttempt(
+    pendingPushNotificationJob: PendingPushNotificationJob,
+  ): Promise<PushNotificationJob | boolean | NodeJS.ErrnoException> {
+    const { id, retry_attempt } = pendingPushNotificationJob;
+    const sql = `
+      UPDATE push_notification_jobs SET retry_attempt = $1 WHERE id = $2;
+    `;
+    const retry_value = retry_attempt + 1;
+    return await pg
+      .query(sql, [retry_value, id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
         } else {
           return false;
         }

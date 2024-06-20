@@ -16,6 +16,35 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: update_completed_at(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_completed_at() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Check if the update sets pending to false and complete to true
+    IF NEW.pending = false AND NEW.completed = true THEN
+        -- Update completed_at with current timestamp
+        NEW.completed_at := NOW();
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_completed_at() OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: devices; Type: TABLE; Schema: public; Owner: postgres
+--
+
 CREATE TABLE public.devices (
     id integer NOT NULL,
     device_uuid text NOT NULL,
@@ -127,7 +156,6 @@ ALTER SEQUENCE public.permissions_id_seq OWNED BY public.permissions.id;
 CREATE TABLE public.push_notification_jobs (
     id integer NOT NULL,
     push_id integer NOT NULL,
-    priority integer DEFAULT 1,
     completed boolean DEFAULT false,
     pending boolean DEFAULT true,
     failed boolean DEFAULT false,
@@ -208,7 +236,7 @@ CREATE TABLE public.push_notifications (
     to_device_id integer NOT NULL,
     data text,
     title text,
-    body integer,
+    body text,
     push_notification_type_id integer NOT NULL
 );
 
@@ -529,7 +557,9 @@ COPY public.permissions (id, name, created) FROM stdin;
 -- Data for Name: push_notification_jobs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.push_notification_jobs (id, push_id, priority, completed, pending, failed, error, completed_at, created_at, retry_attempt) FROM stdin;
+COPY public.push_notification_jobs (id, push_id, completed, pending, failed, error, completed_at, created_at, retry_attempt) FROM stdin;
+2	2	f	t	f	\N	\N	2024-06-20 09:32:40.595614	0
+1	2	t	f	f	\N	2024-06-20 09:32:56.449973	2024-06-20 08:54:09.589491	0
 \.
 
 
@@ -549,6 +579,7 @@ COPY public.push_notification_type (id, name, ttl, priority, mutable_content) FR
 --
 
 COPY public.push_notifications (id, to_device_id, data, title, body, push_notification_type_id) FROM stdin;
+2	3	{"body":"test"}	test	test	1
 \.
 
 
@@ -625,7 +656,7 @@ SELECT pg_catalog.setval('public.permissions_id_seq', 1, true);
 -- Name: push_notification_jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.push_notification_jobs_id_seq', 1, false);
+SELECT pg_catalog.setval('public.push_notification_jobs_id_seq', 2, true);
 
 
 --
@@ -639,7 +670,7 @@ SELECT pg_catalog.setval('public.push_notification_type_id_seq', 3, true);
 -- Name: push_notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.push_notifications_id_seq', 1, false);
+SELECT pg_catalog.setval('public.push_notifications_id_seq', 2, true);
 
 
 --
@@ -784,6 +815,13 @@ CREATE UNIQUE INDEX roles_role_name_uindex ON public.roles USING btree (role_nam
 --
 
 CREATE UNIQUE INDEX users_id_number_uindex ON public.users USING btree (id_number);
+
+
+--
+-- Name: push_notification_jobs update_completed_at_trigger; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_completed_at_trigger BEFORE UPDATE ON public.push_notification_jobs FOR EACH ROW WHEN (((old.pending IS DISTINCT FROM new.pending) OR (old.completed IS DISTINCT FROM new.completed))) EXECUTE FUNCTION public.update_completed_at();
 
 
 --
