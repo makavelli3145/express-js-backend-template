@@ -4,9 +4,10 @@ import { RequestWithUser } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
 import { AuthService } from '@services/auth.service';
 import { Device } from '@interfaces/device.interface';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import { DevicesService } from '@services/devices.service';
 import { UserService } from '@services/users.service';
+import * as console from 'console';
 export class AuthController {
   public authService = Container.get(AuthService);
   public deviceService = Container.get(DevicesService);
@@ -33,6 +34,7 @@ export class AuthController {
           }
         } else {
           this.userService.createUser(user).then(createdUser => {
+            console.log(createdUser);
             if (typeof createdUser !== 'boolean' && 'id' in createdUser && createdUser?.id !== undefined) {
               const userId = createdUser.id;
               const device: Device = {
@@ -40,8 +42,9 @@ export class AuthController {
                 user_id: userId,
               };
               this.deviceService.createDevice(device).then(createdDevice => {
+                console.log(createdDevice);
                 if (typeof createdDevice !== 'boolean' && 'device_uuid' in createdDevice && createdDevice?.device_uuid !== undefined) {
-                  res.status(200).json(createdDevice);
+                  res.status(200).json({ device: createdDevice, user: createdUser });
                 } else {
                   res.status(401).send('device could not be registered');
                 }
@@ -78,19 +81,19 @@ export class AuthController {
   };
 
   public deregisterDevice = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
-    const reqDevice : Device = req.body;
+    const reqDevice: Device = req.body;
     try {
-      this.deviceService.deleteDevice(reqDevice).then((device)=>{
-        if(device){
-          res.status(200).send(device)
-        }else{
+      this.deviceService.deleteDevice(reqDevice).then(device => {
+        if (device) {
+          res.status(200).send(device);
+        } else {
           res.status(500).send('Device could not be deleted');
         }
-      })
-    }catch(error){
-      next(error)
+      });
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 
   public deRegisterUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const user: User = req.body;
@@ -101,9 +104,19 @@ export class AuthController {
         } else {
           res.status(401).send('user could not be deleted at this time');
         }
-      })
+      });
     } catch (error) {
       next(error);
     }
+  };
+
+  public logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    req.session.destroy(err => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to logout' });
+      }
+      res.clearCookie('connect.sid'); // Clear the session cookie
+      res.json({ message: 'Logged out successfully' });
+    });
   };
 }

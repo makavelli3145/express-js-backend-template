@@ -6,7 +6,7 @@ import { Device } from '@interfaces/device.interface';
 export class DevicesService {
   async createDevice(device: Device): Promise<Device | boolean | NodeJS.ErrnoException> {
     const { device_uuid, user_id } = device;
-    const sql = `INSERT into devices (device_uuid, user_id) VALUES ($1, $2);`;
+    const sql = `INSERT into devices (device_uuid, user_id) VALUES ($1, $2) RETURNING id, device_uuid, user_id;`;
     return await pg
       .query(sql, [device_uuid, user_id])
       .then(result => {
