@@ -4,9 +4,10 @@ import { RequestWithUser } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
 import { AuthService } from '@services/auth.service';
 import { Device } from '@interfaces/device.interface';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import { DevicesService } from '@services/devices.service';
 import { UserService } from '@services/users.service';
+import * as console from 'console';
 export class AuthController {
   public authService = Container.get(AuthService);
   public deviceService = Container.get(DevicesService);
@@ -33,6 +34,7 @@ export class AuthController {
           }
         } else {
           this.userService.createUser(user).then(createdUser => {
+            console.log(createdUser);
             if (typeof createdUser !== 'boolean' && 'id' in createdUser && createdUser?.id !== undefined) {
               const userId = createdUser.id;
               const device: Device = {
@@ -40,8 +42,9 @@ export class AuthController {
                 user_id: userId,
               };
               this.deviceService.createDevice(device).then(createdDevice => {
+                console.log(createdDevice);
                 if (typeof createdDevice !== 'boolean' && 'device_uuid' in createdDevice && createdDevice?.device_uuid !== undefined) {
-                  res.status(200).json(createdDevice);
+                  res.status(200).json({ device: createdDevice, user: createdUser });
                 } else {
                   res.status(401).send('device could not be registered');
                 }

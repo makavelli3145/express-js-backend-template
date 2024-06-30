@@ -109,9 +109,6 @@ export class App {
 
   private initializeRoutes(routes: Routes[]) {
     routes.forEach(route => {
-      this.app.use('/', (req, res) => {
-        res.status(200).send('nyoupe');
-      });
       this.app.use('/api/v1/', route.router);
     });
   }

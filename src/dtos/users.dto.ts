@@ -10,13 +10,13 @@ import {
   ValidatorConstraintInterface,
   IsUUID,
 } from 'class-validator';
+import * as console from 'console';
 
 @ValidatorConstraint({ name: 'isValidSouthAfricanId', async: false })
 class IsValidSouthAfricanId implements ValidatorConstraintInterface {
   validate(idNumber: string, args: ValidationArguments) {
-    const regex = /^(?<birthdate>\d{6})(?<gender>[5-9]\d{3})0\d{2}\d{2}$/;
+    const regex = /^(?<idnumber>(?<birthdate>\d{6})(?<gender>\d{4})(\d{3}))/;
     const matches = idNumber.match(regex);
-
     if (!matches) {
       return false; // Invalid format
     }
@@ -43,7 +43,7 @@ class IsValidSouthAfricanId implements ValidatorConstraintInterface {
     }
 
     // Check last digit (check bit)
-    const digits = idNumber.substring(0, 12).split('').map(Number);
+    const digits = idNumber.substring(0, 13).split('').map(Number);
     return luhnsChecksum(digits);
   }
 
@@ -55,9 +55,9 @@ class IsValidSouthAfricanId implements ValidatorConstraintInterface {
 function luhnsChecksum(digitArray: number[]): boolean {
   let result: number = 0;
   digitArray.forEach((digit, index) => {
-    if (index === digitArray.length - 1) {
+    if (index < digitArray.length - 1) {
       if (digit * 2 > 10 && index % 2 === 0) {
-        const stringDigit = digit.toString();
+        const stringDigit = (digit * 2).toString();
         const firstDigit = parseInt(stringDigit.charAt(0));
         const secondDigit = parseInt(stringDigit.charAt(1));
         result += firstDigit + secondDigit;
@@ -65,13 +65,13 @@ function luhnsChecksum(digitArray: number[]): boolean {
         result += digit;
       }
     }
-    let remainder = result % 10;
-    if (remainder > 0) {
-      result = 10 - remainder;
-    } else {
-      result = remainder;
-    }
   });
+  let remainder = result % 10;
+  if (remainder > 0) {
+    result = 10 - remainder;
+  } else {
+    result = remainder;
+  }
   return result === digitArray[digitArray.length - 1];
 }
 

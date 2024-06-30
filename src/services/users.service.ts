@@ -50,15 +50,15 @@ export class UserService {
   }
 
   public async createUser(userData: User): Promise<User | boolean | NodeJS.ErrnoException> {
-    const { id_number, role_id, pin, name } = userData;
+    const { id_number, pin, name } = userData;
 
     const sql: string = `INSERT INTO
             users (id_number, role_id, pin, name)
             VALUES
-                ($1, $2, $3, $4)`;
+                ($1, $2, $3, $4) RETURNING id, id_number, role_id, name`;
 
     return await pg
-      .query(sql, [id_number, role_id, pin, name])
+      .query(sql, [id_number, 1, pin, name])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
