@@ -20,26 +20,12 @@ export class DevicesService {
   }
   async deleteDevice(device: Device): Promise<Device | boolean | NodeJS.ErrnoException> {
     const { id } = device;
-    const selectSql = 'Select id, device_uuid, user_id from devices where id = $1';
-    const deleteSql = `Delete FROM devices where id = $1;`
-
-    let deviceDetails;
-
-    await pg
-      .query(selectSql, [id])
-      .then(result =>{
-        if(result.rowCount > 0){
-          deviceDetails = result.rows[0];
-        }else{
-          return false;
-        }
-      }).catch(err => err);
-
+    const sql = `DELETE FROM devices WHERE id = $1 RETURNING *;`;
     return await pg
-      .query(deleteSql, [id])
+      .query(sql, [id])
       .then(result => {
         if (result.rowCount > 0) {
-          return deviceDetails;
+          return result.rows[0];
         } else {
           return false;
         }
