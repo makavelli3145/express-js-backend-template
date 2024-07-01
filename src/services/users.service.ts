@@ -87,7 +87,7 @@ export class UserService {
   }
 
   public async deleteUser(userId: number): Promise<User | boolean | NodeJS.ErrnoException> {
-    const sql = `DELETE FROM users WHERE id = $1`;
+    const sql = `DELETE FROM users WHERE id = $1 RETURNING *;`;
     return await pg
       .query(sql, [userId])
       .then(result => {
