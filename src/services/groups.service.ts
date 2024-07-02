@@ -6,7 +6,7 @@ import { Group } from '@interfaces/group.interface';
 export class GroupsService {
   public createGroup = async (group: Group): Promise<Group | boolean | NodeJS.ErrnoException> => {
     const { name, created_by_user_id } = group;
-    const sql = `INSERT INTO groups (name, created_by_user_id) VALUES ( $1, $2)`;
+    const sql = `INSERT INTO groups (name, created_by_user_id) VALUES ( $1, $2) RETURNING *`;
     return await pg
       .query(sql, [name, created_by_user_id])
       .then(result => {
