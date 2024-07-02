@@ -22,8 +22,7 @@ export class GroupsService {
   public updateGroup = async (group: Group): Promise<Group | boolean | NodeJS.ErrnoException> => {
     const { id, name, created_by_user_id } = group;
     const sql = `
-      UPDATE groups SET name = $1, created_by_user_id = $2 WHERE id = $3;
-    `;
+      UPDATE groups SET name = $1, created_by_user_id = $2 WHERE id = $3 RETURNING *;`;
     return await pg
       .query(sql, [name, created_by_user_id, id])
       .then(result => {
