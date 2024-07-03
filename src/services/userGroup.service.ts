@@ -8,8 +8,7 @@ export class UserGroupService {
   public createUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
     const { user_id, group_id, user_group_permissions } = reqUserGroup;
     const sql = `
-      INSERT INTO users_groups (group_id, user_id, user_group_permissions) VALUES ( $1, $2, $3);
-    `;
+      INSERT INTO users_groups (group_id, user_id, user_group_permissions) VALUES ( $1, $2, $3) RETURNING *;`;
     return await pg
       .query(sql, [group_id, user_id, user_group_permissions])
       .then(result => {
