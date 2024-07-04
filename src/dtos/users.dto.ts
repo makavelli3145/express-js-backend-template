@@ -103,7 +103,7 @@ export class DeleteUserDto {
 export class LoginUserDto {
   @IsNotEmpty()
   @IsNumber()
-  public device_id: number;
+  public id: number;
 
   @IsNotEmpty()
   @IsNumber()
