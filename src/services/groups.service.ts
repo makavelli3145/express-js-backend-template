@@ -37,7 +37,7 @@ export class GroupsService {
 
   async deleteGroup(group: Group): Promise<Group | boolean | NodeJS.ErrnoException> {
     const { id } = group;
-    const sql = `Delete FROM groups where id = $1;`
+    const sql = `Delete FROM groups where id = $1 RETURNING *;`;
     return await pg
       .query(sql, [id])
       .then(result => {
