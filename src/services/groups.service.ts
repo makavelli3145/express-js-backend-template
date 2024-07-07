@@ -6,7 +6,7 @@ import { Group } from '@interfaces/group.interface';
 export class GroupsService {
   public createGroup = async (group: Group): Promise<Group | boolean | NodeJS.ErrnoException> => {
     const { name, created_by_user_id } = group;
-    const sql = `INSERT INTO groups (name, created_by_user_id) VALUES ( $1, $2)`;
+    const sql = `INSERT INTO groups (name, created_by_user_id) VALUES ( $1, $2) RETURNING *`;
     return await pg
       .query(sql, [name, created_by_user_id])
       .then(result => {
@@ -22,8 +22,7 @@ export class GroupsService {
   public updateGroup = async (group: Group): Promise<Group | boolean | NodeJS.ErrnoException> => {
     const { id, name, created_by_user_id } = group;
     const sql = `
-      UPDATE groups SET name = $1, created_by_user_id = $2 WHERE id = $3;
-    `;
+      UPDATE groups SET name = $1, created_by_user_id = $2 WHERE id = $3 RETURNING *;`;
     return await pg
       .query(sql, [name, created_by_user_id, id])
       .then(result => {
@@ -38,7 +37,7 @@ export class GroupsService {
 
   async deleteGroup(group: Group): Promise<Group | boolean | NodeJS.ErrnoException> {
     const { id } = group;
-    const sql = `Delete FROM groups where id = $1;`
+    const sql = `Delete FROM groups where id = $1 RETURNING *;`;
     return await pg
       .query(sql, [id])
       .then(result => {

@@ -74,7 +74,7 @@ export class AuthController {
             req.session.userId = user_id;
             this.userService.findUserById(user_id).then((user: User) => res.status(200).send(user));
           } else {
-            res.status(401).send('Invalid username or password');
+            res.status(401).send('There was a problem with logging in');
           }
         }
       });
