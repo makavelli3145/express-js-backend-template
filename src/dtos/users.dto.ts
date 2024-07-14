@@ -94,7 +94,7 @@ export class CreateUserDto {
   public name: string;
 }
 
-export class DeleteUserDto extends CreateUserDto {
+export class DeleteUserDto {
   @IsNotEmpty()
   @IsNumber()
   public id: number;

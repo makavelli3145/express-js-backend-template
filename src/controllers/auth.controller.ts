@@ -19,14 +19,17 @@ export class AuthController {
       this.authService.idExists(user.id_number).then(userId => {
         if (userId) {
           if (typeof userId === 'number') {
-            // Confirm if the the pin is correct before creating a device
             const isValidPinCode = this.authService.isValidPin(userId, user.pin);
-
+            // If the user's ID number already exists, then:
+            // 1) check if the pin is valid and then,
+            // 2) create a new device that is is linked
+            //    to the current user
             if (isValidPinCode) {
               const device: Device = {
                 device_uuid: uuid(),
                 user_id: userId,
               };
+
               this.deviceService.createDevice(device).then(createdDevice => res.status(200).json(createdDevice));
             } else {
               res.status(401).send('Your ID or password is wrong');
@@ -71,7 +74,7 @@ export class AuthController {
             req.session.userId = user_id;
             this.userService.findUserById(user_id).then((user: User) => res.status(200).send(user));
           } else {
-            res.status(401).send('Invalid username or password');
+            res.status(401).send('There was a problem with logging in');
           }
         }
       });
