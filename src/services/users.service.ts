@@ -1,24 +1,34 @@
-import { hash } from 'bcrypt';
 import { Service } from 'typedi';
 import pg from '@database';
-import { HttpException } from '@exceptions/httpException';
 import { User } from '@interfaces/users.interface';
 
 @Service()
 export class UserService {
-  public async findAllUser(): Promise<User[]> {
-    const { rows } = await pg.query(`
+  public async findAllUser(): Promise<User[] | boolean | NodeJS.ErrnoException> {
+    return await pg
+      .query(
+        `
     SELECT
       *
     FROM
       users
-    `);
-    return rows;
+    `,
+      )
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows;
+        }
+        return false;
+      })
+      .catch(error => {
+        return error;
+      });
   }
 
   public async findUserById(userId: number): Promise<User> {
-    const { rows, rowCount } = await pg.query(
-      `
+    return await pg
+      .query(
+        `
     SELECT
       *
     FROM
@@ -26,108 +36,68 @@ export class UserService {
     WHERE
       id = $1
     `,
-      [userId],
-    );
-    if (!rowCount) throw new HttpException(409, "User doesn't exist");
-
-    return rows[0];
+        [userId],
+      )
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        }
+        return false;
+      })
+      .catch(error => {
+        return error;
+      });
   }
 
-  public async createUser(userData: User): Promise<User> {
-    const { email, password } = userData;
+  public async createUser(userData: User): Promise<User | boolean | NodeJS.ErrnoException> {
+    const { id_number, pin, name } = userData;
 
-    const { rows } = await pg.query(
-      `
-    SELECT EXISTS(
-      SELECT
-        "email"
-      FROM
-        users
-      WHERE
-        "email" = $1
-    )`,
-      [email],
-    );
-    if (rows[0].exists) throw new HttpException(409, `This email ${email} already exists`);
+    const sql: string = `INSERT INTO
+            users (id_number, role_id, pin, name)
+            VALUES
+                ($1, $2, $3, $4) RETURNING id, id_number, role_id, name`;
 
-    const hashedPassword = await hash(password, 10);
-    const { rows: createUserData } = await pg.query(
-      `
-      INSERT INTO
-        users(
-          "email",
-          "password"
-        )
-      VALUES ($1, $2)
-      RETURNING "email", "password"
-      `,
-      [email, hashedPassword],
-    );
-
-    return createUserData[0];
+    return await pg
+      .query(sql, [id_number, 1, pin, name])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        }
+        return false;
+      })
+      .catch(error => {
+        return error;
+      });
   }
 
-  public async updateUser(userId: number, userData: User): Promise<User[]> {
-    const { rows: findUser } = await pg.query(
-      `
-      SELECT EXISTS(
-        SELECT
-          "id"
-        FROM
-          users
-        WHERE
-          "id" = $1
-      )`,
-      [userId],
-    );
-    if (findUser[0].exists) throw new HttpException(409, "User doesn't exist");
-
-    const { email, password } = userData;
-    const hashedPassword = await hash(password, 10);
-    const { rows: updateUserData } = await pg.query(
-      `
-      UPDATE
-        users
-      SET
-        "email" = $2,
-        "password" = $3
-      WHERE
-        "id" = $1
-      RETURNING "email", "password"
-    `,
-      [userId, email, hashedPassword],
-    );
-
-    return updateUserData;
+  public async updateUser(user: User): Promise<User | boolean | NodeJS.ErrnoException> {
+    const { id, id_number, role_id, pin, name } = user;
+    const sql = `UPDATE users SET id_number = $1, role_id = $2, name = $3, pin = $4 where id = $5`;
+    return await pg
+      .query(sql, [id_number, role_id, name, pin, id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        }
+        return false;
+      })
+      .catch(error => {
+        return error;
+      });
   }
 
-  public async deleteUser(userId: number): Promise<User[]> {
-    const { rows: findUser } = await pg.query(
-      `
-      SELECT EXISTS(
-        SELECT
-          "id"
-        FROM
-          users
-        WHERE
-          "id" = $1
-      )`,
-      [userId],
-    );
-    if (findUser[0].exists) throw new HttpException(409, "User doesn't exist");
-
-    const { rows: deleteUserData } = await pg.query(
-      `
-      DELETE
-      FROM
-        users
-      WHERE
-        id = $1
-      RETURNING "email", "password"
-      `,
-      [userId],
-    );
-
-    return deleteUserData;
+  public async deleteUser(userId: number): Promise<User | boolean | NodeJS.ErrnoException> {
+    const sql = `DELETE FROM users WHERE id = $1 RETURNING *;`;
+    return await pg
+      .query(sql, [userId])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        }
+        return false;
+      })
+      .catch(error => {
+        return error;
+      });
   }
 }

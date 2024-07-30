@@ -10,15 +10,20 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
 import { Routes } from '@interfaces/routes.interface';
+import { CronJobs } from '@interfaces/cronJob.interface';
 import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import session from 'express-session';
+import { createClient } from 'redis';
+import RedisStore from 'connect-redis';
+import { CronJob } from 'cron';
 
 export class App {
   public app: express.Application;
   public env: string;
   public port: string | number;
 
-  constructor(routes: Routes[]) {
+  constructor(routes: Routes[], cronjobs: CronJobs[] | undefined) {
     this.app = express();
     this.env = NODE_ENV || 'development';
     this.port = PORT || 3000;
@@ -27,6 +32,30 @@ export class App {
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
+    if (cronjobs !== undefined) {
+      this.initializeCron(cronjobs);
+    }
+  }
+
+  public initializeCron(cronjobs: CronJobs[]) {
+    cronjobs.forEach((cronjob: CronJobs, index) => {
+      try {
+        this.createCronJobs(cronjob.schedule, cronjob.callback);
+      } catch (e) {
+        console.error(`Error while setting up cron job:`, e.message);
+      }
+    });
+  }
+
+  private createCronJobs(period: string, callback: () => void) {
+    new CronJob(
+      period,
+      function () {
+        callback();
+      },
+      null,
+      true,
+    );
   }
 
   public listen() {
@@ -51,11 +80,36 @@ export class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+    this.app.use(session(this.initializeSession()));
+  }
+
+  private initializeSession() {
+    let redisClient = createClient({
+      socket: {
+        host: 'redis',
+        port: 6379,
+      },
+    });
+    redisClient.connect().catch(console.error);
+
+    let redisStore = new RedisStore({
+      client: redisClient,
+      prefix: 'solace-api:',
+    });
+    const sess: session.SessionOptions = {
+      store: redisStore,
+      secret: '+Uly7Ezx/VkukgCzRpiicVF2JGtZnK5eoaeIQuDADyIY7lEwnL1FsKK5ptjhC/53',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { secure: this.env === 'production' },
+    };
+
+    return sess;
   }
 
   private initializeRoutes(routes: Routes[]) {
     routes.forEach(route => {
-      this.app.use('/', route.router);
+      this.app.use('/api/v1/', route.router);
     });
   }
 
