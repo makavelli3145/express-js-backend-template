@@ -28,7 +28,6 @@ class IsValidSouthAfricanId implements ValidatorConstraintInterface {
     const century = birthdate.charAt(0) <= currentYear.toString().charAt(2) ? '20' : '19';
     const birthYear = parseInt(century + birthdate.substr(0, 2));
     const age = currentYear - birthYear;
-
     if (age > 130) {
       return false; // Person is older than 110 years
     }
@@ -53,26 +52,27 @@ class IsValidSouthAfricanId implements ValidatorConstraintInterface {
 }
 
 function luhnsChecksum(digitArray: number[]): boolean {
-  let result: number = 0;
-  digitArray.forEach((digit, index) => {
-    if (index < digitArray.length - 1) {
-      if (digit * 2 > 10 && index % 2 === 0) {
-        const stringDigit = (digit * 2).toString();
-        const firstDigit = parseInt(stringDigit.charAt(0));
-        const secondDigit = parseInt(stringDigit.charAt(1));
-        result += firstDigit + secondDigit;
-      } else {
-        result += digit;
+  let sum = 0;
+  const length = digitArray.length;
+
+  // Loop through the digits, starting from the end
+  for (let i = length - 1; i >= 0; i--) {
+    let digit = digitArray[i];
+
+    // Double every second digit
+    if ((length - i) % 2 === 0) {
+      digit *= 2;
+      // If doubling results in a number greater than 9, add the digits of the result
+      if (digit > 9) {
+        digit -= 9;
       }
     }
-  });
-  let remainder = result % 10;
-  if (remainder > 0) {
-    result = 10 - remainder;
-  } else {
-    result = remainder;
+
+    sum += digit;
   }
-  return result === digitArray[digitArray.length - 1];
+
+  // Check if the sum is a multiple of 10
+  return sum % 10 === 0;
 }
 
 export class CreateUserDto {
@@ -84,9 +84,9 @@ export class CreateUserDto {
   public id_number: string;
 
   @IsString()
-  @MinLength(6)
+  @MinLength(4)
   @IsNotEmpty()
-  @MaxLength(6)
+  @MaxLength(4)
   public pin: string;
 
   @IsString()
