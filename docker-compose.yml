@@ -33,11 +33,11 @@ services:
     networks:
       - backend-solace
     depends_on:
-      - pg
-      - redis  # Ensure server depends on Redis
+      - pg-solace
+      - redis-solace  # Ensure server depends on Redis
 
-  pg:
-    container_name: pg
+  pg-solace:
+    container_name: pg-solace
     image: postgres:14.5-alpine
     ports:
       - "5432:5432"
