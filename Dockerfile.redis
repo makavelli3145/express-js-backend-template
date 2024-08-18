@@ -1,2 +1,3 @@
-FROM redis:latest
+FROM debian:latest
+RUN apt-get update && apt-get install -y redis-server
 RUN sysctl -w vm.overcommit_memory=1
