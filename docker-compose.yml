@@ -51,13 +51,18 @@ services:
       - backend-solace
 
   redis-solace:
-    container_name: redis-solace
     image: redis:latest
+    restart: always
     ports:
       - "6379:6379"
     volumes:
-      - redisdata:/data
-    restart: always
+      - redisdata/dаta:/root/redis
+      - redisdata/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=my-password
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    container_name: redis-solace
     networks:
       - backend-solace
 
