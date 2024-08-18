@@ -59,12 +59,13 @@ services:
       - redisdata/data:/root/redis
       - redisdata/redis.conf:/usr/local/etc/redis/redis.conf
     environment:
-      - REDIS_PASSWORD=my-password
+      - REDIS_PASSWORD="+Uly7Ezx/VkukgCzRpiicVF2JGtZnK5eoaeIQuDADyIY7lEwnL1FsKK5ptjhC/53"
       - REDIS_PORT=6379
       - REDIS_DATABASES=16
     container_name: redis-solace
     networks:
       - backend-solace
+
 
 networks:
   backend-solace:
