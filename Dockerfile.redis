@@ -1,0 +1,2 @@
+FROM redis:latest
+RUN sysctl -w vm.overcommit_memory=1

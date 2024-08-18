@@ -52,7 +52,9 @@ services:
 
   redis-solace:
     container_name: redis-solace
-    image: redis:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile.redis
     ports:
       - "6379:6379"
     volumes:
