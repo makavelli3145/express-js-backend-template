@@ -44,6 +44,7 @@ services:
       POSTGRES_PASSWORD: 44*^i33xs7G2V^z%
       POSTGRES_DB: public
     volumes:
+      # - ./postgresdata:/var/lib/postgresql/data
       - ./src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
     networks:
@@ -51,9 +52,7 @@ services:
 
   redis-solace:
     container_name: redis-solace
-    build:
-      context: ./
-      dockerfile: Dockerfile.redis
+    image: redis:latest
     ports:
       - "6379:6379"
     volumes:
