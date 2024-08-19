@@ -29,7 +29,7 @@ services:
       POSTGRES_HOST: pg-solace
       POSTGRES_PORT: 5432
       POSTGRES_DB: public
-      REDIS_HOST: redis  # Add Redis host environment variable
+      REDIS_HOST: redis-solace
       OTEL_METRICS_EXPORTER: None
     volumes:
       - ./:/app
