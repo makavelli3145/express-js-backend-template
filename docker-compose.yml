@@ -18,6 +18,12 @@ services:
     ports:
       - "3000:3000"
     environment:
+      LOG_FORMAT: dev
+      LOG_DIR: /logs
+      ORIGIN: *
+      PORT: 3000
+      SECRET_KEY: secretKey
+      CREDENTIALS: true
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 44*^i33xs7G2V^z%
       POSTGRES_HOST: pg-solace
