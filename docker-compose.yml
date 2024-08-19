@@ -20,10 +20,11 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 44*^i33xs7G2V^z%
-      POSTGRES_HOST: pg
+      POSTGRES_HOST: pg-solace
       POSTGRES_PORT: 5432
       POSTGRES_DB: public
       REDIS_HOST: redis  # Add Redis host environment variable
+      OTEL_METRICS_EXPORTER: None
     volumes:
       - ./:/app
       - /app/node_modules
