@@ -15,6 +15,10 @@ import * as console from 'console';
 @ValidatorConstraint({ name: 'isValidSouthAfricanId', async: false })
 class IsValidSouthAfricanId implements ValidatorConstraintInterface {
   validate(idNumber: string, args: ValidationArguments) {
+    if(typeof idNumber !== 'string' || !idNumber.trim()){
+      return false;
+    }
+
     const regex = /^(?<idnumber>(?<birthdate>\d{6})(?<gender>\d{4})(\d{3}))/;
     const matches = idNumber.match(regex);
     if (!matches) {
@@ -76,11 +80,12 @@ function luhnsChecksum(digitArray: number[]): boolean {
 }
 
 export class CreateUserDto {
+
   @IsString()
+  @IsNotEmpty()
   @Validate(IsValidSouthAfricanId, {
     message: 'Invalid South African ID number',
   })
-  @IsNotEmpty()
   public id_number: string;
 
   @IsString()
