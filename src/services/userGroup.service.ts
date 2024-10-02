@@ -5,6 +5,19 @@ import { UserGroup } from '@interfaces/userGroup.interface';
 
 @Service()
 export class UserGroupService {
+  async getGroupsByUserId(userId: number) {
+    const sql = 'Select * FROM users_groups WHERE user_id = $1;';
+    return await pg
+      .query(sql, [userId])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows;
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
+  }
   public createUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
     const { user_id, group_id, user_group_permissions } = reqUserGroup;
     const sql = `
