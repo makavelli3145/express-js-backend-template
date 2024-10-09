@@ -6,6 +6,37 @@ import { UserGroup } from '@interfaces/userGroup.interface';
 export class UserGroupController {
   private userGroupService = Container.get(UserGroupService);
 
+  public getGroupsByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Extracting user id from URL parameters and convert userId to number
+      const userId = Number(req.params.id);
+      this.userGroupService.getGroupsByUserId(userId).then((result) => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res.status(500).send('a group could not be created at this time');
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAllUsersByGroupId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Extracting user id from URL parameters and convert userId to number
+      const groupId = Number(req.params.id);
+      this.userGroupService.getAllUsersByGroupId(groupId).then((result) => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res.status(500).send('a group could not be created at this time');
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
   public createUserGroup = (req: Request, res: Response, next: NextFunction) => {
     try {
       const reqUserGroup: UserGroup = req.body;

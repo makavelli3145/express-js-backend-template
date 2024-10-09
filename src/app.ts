@@ -86,7 +86,7 @@ export class App {
   private initializeSession() {
     let redisClient = createClient({
       socket: {
-        host: 'redis',
+        host: 'redis-solace',
         port: 6379,
       },
     });
