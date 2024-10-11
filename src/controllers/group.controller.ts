@@ -5,7 +5,6 @@ import { GroupsService } from '@services/groups.service';
 
 export class GroupController {
   public groupService = Container.get(GroupsService);
-
   public createGroup = (req: Request, res: Response, next: NextFunction) => {
     try {
       const group: Group = req.body;
