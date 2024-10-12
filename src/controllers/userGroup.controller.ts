@@ -9,7 +9,7 @@ export class UserGroupController {
   public getGroupsByUserId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Extracting user id from URL parameters and convert userId to number
-      const userId = Number(req.params.id);
+      const userId = Number(req.query.id);
       this.userGroupService.getGroupsByUserId(userId).then((result) => {
         if (result) {
           res.status(200).json(result);
@@ -25,7 +25,7 @@ export class UserGroupController {
   public getAllUsersByGroupId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Extracting user id from URL parameters and convert userId to number
-      const groupId = Number(req.params.id);
+      const groupId = Number(req.query.id);
       this.userGroupService.getAllUsersByGroupId(groupId).then((result) => {
         if (result) {
           res.status(200).json(result);
