@@ -6,7 +6,8 @@ import { UserGroup } from '@interfaces/userGroup.interface';
 @Service()
 export class UserGroupService {
   async getGroupsByUserId(userId: number) {
-    const sql = 'Select * FROM users_groups WHERE user_id = $1;';
+    const sql =
+      'Select groups.id, groups.created_by_user_id, groups.name FROM users_groups JOIN groups on users_groups.group_id=groups.id WHERE user_id = $1;';
     return await pg
       .query(sql, [userId])
       .then(result => {
@@ -48,30 +49,35 @@ export class UserGroupService {
       .catch(error => error);
   };
 
-  public updateUserGroup = async (reqUserGroup: UserGroup):Promise<UserGroup | boolean | NodeJS.ErrnoException> =>{
+  public updateUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
     const { user_id, group_id, user_group_permissions } = reqUserGroup;
-    const sql:string = "UPDATE users_groups SET user_id=$1, user_group_permissions=$2 WHERE group_id=$3 RETURNING *";
-      return await pg.query(sql, [user_id, user_group_permissions, group_id])
-        .then(result=>{
-          if(result.rowCount > 0){
-            return result.rows[0];
-          }else{
-            return false;
-          }
-      }).catch(err => err);
-    }
+    const sql: string = 'UPDATE users_groups SET user_id=$1, user_group_permissions=$2 WHERE group_id=$3 RETURNING *';
+    return await pg
+      .query(sql, [user_id, user_group_permissions, group_id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
+  };
 
-  public deleteUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> =>{
-    const {user_id, group_id, user_group_permissions, id} = reqUserGroup;
-    const sql:string = 'DELETE FROM users_groups WHERE id=$1 RETURNING *';
-    return await pg.query(sql, [id]).then(result => {
-      if(result.rowCount > 0){
-        return result.rows[0];
-      }else{
-        return false;
-      }
-    }).catch(err => {
-      return err;
-    });
-  }
+  public deleteUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
+    const { user_id, group_id, user_group_permissions, id } = reqUserGroup;
+    const sql: string = 'DELETE FROM users_groups WHERE id=$1 RETURNING *';
+    return await pg
+      .query(sql, [id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => {
+        return err;
+      });
+  };
 }
