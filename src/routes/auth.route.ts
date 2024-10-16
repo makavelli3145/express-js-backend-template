@@ -8,13 +8,14 @@ import { AuthMiddleware } from '@middlewares/auth.middleware';
 
 export class AuthRoute implements Routes {
   public router = Router();
-  public auth = new AuthController();
+  private auth = new AuthController();
 
   constructor() {
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
+    this.router.get('/health', (req, res) => res.status(200).send('OK'));
     this.router.post('/auth/signup', ValidationMiddleware(CreateUserDto), this.auth.signUp);
     this.router.post('/auth/login', ValidationMiddleware(LoginUserDto), this.auth.logIn);
     this.router.post('/auth/deRegisterUser', AuthMiddleware, ValidationMiddleware(DeleteUserDto), this.auth.deRegisterUser);

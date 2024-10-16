@@ -7,7 +7,7 @@ import { AuthMiddleware } from '@middlewares/auth.middleware';
 
 export class UserGroupRoute implements Routes {
   public router = Router();
-  public userGroup = new UserGroupController();
+  private userGroup = new UserGroupController();
 
   constructor() {
     this.initializeRoutes();
