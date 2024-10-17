@@ -535,190 +535,170 @@ ALTER TABLE ONLY public.users_groups ALTER COLUMN id SET DEFAULT nextval('public
 -- Data for Name: devices; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.devices (id, device_uuid, user_id, created, push_token) FROM stdin;
-3	123456	3	2024-06-17 16:16:49.86759	123
-4	1234567	4	2024-06-17 16:17:00.150695	1234
-5	12345678	3	2024-06-17 16:19:20.905372	12345
-6	123456789	5	2024-06-17 16:20:17.652344	123456
-7	b3dc4051-4014-443a-ab49-c036c843f5c0	4	2024-10-16 18:20:33.069338	\N
-\.
+INSERT INTO public.devices VALUES (3, '123456', 3, '2024-06-17 16:16:49.86759', '123');
+INSERT INTO public.devices VALUES (4, '1234567', 4, '2024-06-17 16:17:00.150695', '1234');
+INSERT INTO public.devices VALUES (5, '12345678', 3, '2024-06-17 16:19:20.905372', '12345');
+INSERT INTO public.devices VALUES (6, '123456789', 5, '2024-06-17 16:20:17.652344', '123456');
+INSERT INTO public.devices VALUES (7, 'b3dc4051-4014-443a-ab49-c036c843f5c0', 4, '2024-10-16 18:20:33.069338', NULL);
 
 
 --
 -- Data for Name: groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.groups (id, name, created_by_user_id, created) FROM stdin;
-2	test	3	2024-06-17 16:15:20.271736
-3	test2	5	2024-06-17 16:20:41.127677
-6	test3	5	2024-10-16 18:12:04.135854
-27	Security Squad	4	2024-10-16 19:01:13.053339
-31	Security Squad	4	2024-10-16 19:01:13.52197
-23	Security Squad	4	2024-10-16 19:01:12.613248
-16	Security Squad	4	2024-10-16 19:01:11.647119
-7	Security Squad	4	2024-10-16 18:20:53.025031
-26	Security Squad	4	2024-10-16 19:01:12.947519
-28	Security Squad	4	2024-10-16 19:01:13.174636
-30	Security Squad	4	2024-10-16 19:01:13.394754
-22	Security Squad	4	2024-10-16 19:01:12.501086
-18	Security Squad	4	2024-10-16 19:01:12.076425
-24	Security Squad	4	2024-10-16 19:01:12.727091
-19	Security Squad	4	2024-10-16 19:01:12.194022
-20	Security Squad	4	2024-10-16 19:01:12.290096
-21	Security Squad	4	2024-10-16 19:01:12.39343
-9	Security Squad	4	2024-10-16 18:21:19.271867
-29	Security Squad	4	2024-10-16 19:01:13.306455
-25	Security Squad	4	2024-10-16 19:01:12.840241
-32	Security Squad	4	2024-10-16 19:03:37.269042
-17	Security Squad	4	2024-10-16 19:01:11.806154
-8	Security Squad	4	2024-10-16 18:20:59.50976
-11	Security Squad	4	2024-10-16 18:21:19.552851
-10	Security Squad	4	2024-10-16 18:21:19.351003
-13	Security Squad	4	2024-10-16 18:50:55.163291
-12	Security Squad	4	2024-10-16 18:50:54.253743
-14	Security Squad	4	2024-10-16 18:50:56.429812
-15	Security Squad	4	2024-10-16 19:01:11.41791
-33	Maks Gay Squad	4	2024-10-16 19:46:17.506823
-34	Maks Gay Squad	4	2024-10-16 19:46:17.836328
-35	Maks Gay Squad	4	2024-10-16 19:46:18.010642
-36	Maks Gay Squad	4	2024-10-16 19:46:18.183511
-37	Maks Gay Squad	4	2024-10-16 19:46:18.333761
-38	Maks Gay Squad	4	2024-10-16 19:46:18.46213
-39	Maks Gay Squad	4	2024-10-16 19:46:18.591003
-40	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:19.604145
-41	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:19.741378
-42	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:19.880947
-43	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.010415
-44	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.114654
-45	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.246363
-46	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.359664
-47	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.566635
-48	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.725409
-\.
+INSERT INTO public.groups VALUES (2, 'test', 3, '2024-06-17 16:15:20.271736');
+INSERT INTO public.groups VALUES (3, 'test2', 5, '2024-06-17 16:20:41.127677');
+INSERT INTO public.groups VALUES (6, 'test3', 5, '2024-10-16 18:12:04.135854');
+INSERT INTO public.groups VALUES (27, 'Security Squad', 4, '2024-10-16 19:01:13.053339');
+INSERT INTO public.groups VALUES (31, 'Security Squad', 4, '2024-10-16 19:01:13.52197');
+INSERT INTO public.groups VALUES (23, 'Security Squad', 4, '2024-10-16 19:01:12.613248');
+INSERT INTO public.groups VALUES (16, 'Security Squad', 4, '2024-10-16 19:01:11.647119');
+INSERT INTO public.groups VALUES (7, 'Security Squad', 4, '2024-10-16 18:20:53.025031');
+INSERT INTO public.groups VALUES (26, 'Security Squad', 4, '2024-10-16 19:01:12.947519');
+INSERT INTO public.groups VALUES (28, 'Security Squad', 4, '2024-10-16 19:01:13.174636');
+INSERT INTO public.groups VALUES (30, 'Security Squad', 4, '2024-10-16 19:01:13.394754');
+INSERT INTO public.groups VALUES (22, 'Security Squad', 4, '2024-10-16 19:01:12.501086');
+INSERT INTO public.groups VALUES (18, 'Security Squad', 4, '2024-10-16 19:01:12.076425');
+INSERT INTO public.groups VALUES (24, 'Security Squad', 4, '2024-10-16 19:01:12.727091');
+INSERT INTO public.groups VALUES (19, 'Security Squad', 4, '2024-10-16 19:01:12.194022');
+INSERT INTO public.groups VALUES (20, 'Security Squad', 4, '2024-10-16 19:01:12.290096');
+INSERT INTO public.groups VALUES (21, 'Security Squad', 4, '2024-10-16 19:01:12.39343');
+INSERT INTO public.groups VALUES (9, 'Security Squad', 4, '2024-10-16 18:21:19.271867');
+INSERT INTO public.groups VALUES (29, 'Security Squad', 4, '2024-10-16 19:01:13.306455');
+INSERT INTO public.groups VALUES (25, 'Security Squad', 4, '2024-10-16 19:01:12.840241');
+INSERT INTO public.groups VALUES (32, 'Security Squad', 4, '2024-10-16 19:03:37.269042');
+INSERT INTO public.groups VALUES (17, 'Security Squad', 4, '2024-10-16 19:01:11.806154');
+INSERT INTO public.groups VALUES (8, 'Security Squad', 4, '2024-10-16 18:20:59.50976');
+INSERT INTO public.groups VALUES (11, 'Security Squad', 4, '2024-10-16 18:21:19.552851');
+INSERT INTO public.groups VALUES (10, 'Security Squad', 4, '2024-10-16 18:21:19.351003');
+INSERT INTO public.groups VALUES (13, 'Security Squad', 4, '2024-10-16 18:50:55.163291');
+INSERT INTO public.groups VALUES (12, 'Security Squad', 4, '2024-10-16 18:50:54.253743');
+INSERT INTO public.groups VALUES (14, 'Security Squad', 4, '2024-10-16 18:50:56.429812');
+INSERT INTO public.groups VALUES (15, 'Security Squad', 4, '2024-10-16 19:01:11.41791');
+INSERT INTO public.groups VALUES (33, 'Maks Gay Squad', 4, '2024-10-16 19:46:17.506823');
+INSERT INTO public.groups VALUES (34, 'Maks Gay Squad', 4, '2024-10-16 19:46:17.836328');
+INSERT INTO public.groups VALUES (35, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.010642');
+INSERT INTO public.groups VALUES (36, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.183511');
+INSERT INTO public.groups VALUES (37, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.333761');
+INSERT INTO public.groups VALUES (38, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.46213');
+INSERT INTO public.groups VALUES (39, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.591003');
+INSERT INTO public.groups VALUES (40, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.604145');
+INSERT INTO public.groups VALUES (41, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.741378');
+INSERT INTO public.groups VALUES (42, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.880947');
+INSERT INTO public.groups VALUES (43, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.010415');
+INSERT INTO public.groups VALUES (44, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.114654');
+INSERT INTO public.groups VALUES (45, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.246363');
+INSERT INTO public.groups VALUES (46, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.359664');
+INSERT INTO public.groups VALUES (47, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.566635');
+INSERT INTO public.groups VALUES (48, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.725409');
 
 
 --
 -- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.permissions (id, name, created) FROM stdin;
-1	user	2024-06-15
-\.
+INSERT INTO public.permissions VALUES (1, 'user', '2024-06-15');
 
 
 --
 -- Data for Name: push_notification_jobs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.push_notification_jobs (id, push_id, completed, pending, failed, error, completed_at, created_at, retry_attempt) FROM stdin;
-1	2	t	f	f	\N	2024-06-20 09:32:56.449973	2024-06-20 08:54:09.589491	0
-2	2	t	f	f	\N	2024-10-16 17:46:00.168803	2024-06-20 09:32:40.595614	0
-\.
+INSERT INTO public.push_notification_jobs VALUES (1, 2, true, false, false, NULL, '2024-06-20 09:32:56.449973', '2024-06-20 08:54:09.589491', 0);
+INSERT INTO public.push_notification_jobs VALUES (2, 2, true, false, false, NULL, '2024-10-16 17:46:00.168803', '2024-06-20 09:32:40.595614', 0);
 
 
 --
 -- Data for Name: push_notification_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.push_notification_type (id, name, ttl, priority, mutable_content) FROM stdin;
-1	emergency alert	1200	0	f
-2	wake device	1200	1	f
-3	checkin	1200	0	f
-\.
+INSERT INTO public.push_notification_type VALUES (1, 'emergency alert', 1200, 0, false);
+INSERT INTO public.push_notification_type VALUES (2, 'wake device', 1200, 1, false);
+INSERT INTO public.push_notification_type VALUES (3, 'checkin', 1200, 0, false);
 
 
 --
 -- Data for Name: push_notifications; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.push_notifications (id, to_device_id, data, title, body, push_notification_type_id) FROM stdin;
-2	3	{"body":"test"}	test	test	1
-\.
+INSERT INTO public.push_notifications VALUES (2, 3, '{"body":"test"}', 'test', 'test', 1);
 
 
 --
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.roles (id, role_name) FROM stdin;
-1	user
-2	group_admin
-\.
+INSERT INTO public.roles VALUES (1, 'user');
+INSERT INTO public.roles VALUES (2, 'group_admin');
 
 
 --
 -- Data for Name: roles_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.roles_permissions (id, role_id, permission_id) FROM stdin;
-1	1	1
-2	2	1
-\.
+INSERT INTO public.roles_permissions VALUES (1, 1, 1);
+INSERT INTO public.roles_permissions VALUES (2, 2, 1);
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, id_number, role_id, pin, name, created) FROM stdin;
-3	9501185061080	1	011895	callan	2024-06-17 16:15:04.961011
-4	9812055281082	1	011895	makaveli	2024-06-17 16:15:49.615796
-5	9905205061080	1	011895	random	2024-06-17 16:19:56.477872
-\.
+INSERT INTO public.users VALUES (3, '9501185061080', 1, '011895', 'callan', '2024-06-17 16:15:04.961011');
+INSERT INTO public.users VALUES (4, '9812055281082', 1, '011895', 'makaveli', '2024-06-17 16:15:49.615796');
+INSERT INTO public.users VALUES (5, '9905205061080', 1, '011895', 'random', '2024-06-17 16:19:56.477872');
 
 
 --
 -- Data for Name: users_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users_groups (group_id, user_id, roles_permissions_id, created, id) FROM stdin;
-2	3	1	2024-06-17 16:16:13.466136	2
-2	4	1	2024-06-17 16:16:22.703048	3
-3	5	1	2024-06-17 16:21:19.054075	4
-6	5	2	2024-10-16 18:12:04.135854	6
-7	3	2	2024-10-16 18:20:53.025031	7
-8	3	2	2024-10-16 18:20:59.50976	8
-9	3	2	2024-10-16 18:21:19.271867	9
-26	4	2	2024-10-16 19:01:12.947519	26
-24	4	2	2024-10-16 19:01:12.727091	24
-30	4	2	2024-10-16 19:01:13.394754	30
-32	4	2	2024-10-16 19:03:37.269042	32
-28	4	2	2024-10-16 19:01:13.174636	28
-21	4	2	2024-10-16 19:01:12.39343	21
-15	4	2	2024-10-16 19:01:11.41791	15
-10	4	2	2024-10-16 18:21:19.351003	10
-14	4	2	2024-10-16 18:50:56.429812	14
-13	4	2	2024-10-16 18:50:55.163291	13
-31	4	2	2024-10-16 19:01:13.52197	31
-11	4	2	2024-10-16 18:21:19.552851	11
-19	4	2	2024-10-16 19:01:12.194022	19
-12	4	2	2024-10-16 18:50:54.253743	12
-25	4	2	2024-10-16 19:01:12.840241	25
-29	4	2	2024-10-16 19:01:13.306455	29
-22	4	2	2024-10-16 19:01:12.501086	22
-27	4	2	2024-10-16 19:01:13.053339	27
-20	4	2	2024-10-16 19:01:12.290096	20
-23	4	2	2024-10-16 19:01:12.613248	23
-16	4	2	2024-10-16 19:01:11.647119	16
-17	4	2	2024-10-16 19:01:11.806154	17
-18	4	2	2024-10-16 19:01:12.076425	18
-33	4	2	2024-10-16 19:46:17.506823	33
-34	4	2	2024-10-16 19:46:17.836328	34
-35	4	2	2024-10-16 19:46:18.010642	35
-36	4	2	2024-10-16 19:46:18.183511	36
-37	4	2	2024-10-16 19:46:18.333761	37
-38	4	2	2024-10-16 19:46:18.46213	38
-39	4	2	2024-10-16 19:46:18.591003	39
-40	4	2	2024-10-16 19:47:19.604145	40
-41	4	2	2024-10-16 19:47:19.741378	41
-42	4	2	2024-10-16 19:47:19.880947	42
-43	4	2	2024-10-16 19:47:20.010415	43
-44	4	2	2024-10-16 19:47:20.114654	44
-45	4	2	2024-10-16 19:47:20.246363	45
-46	4	2	2024-10-16 19:47:20.359664	46
-47	4	2	2024-10-16 19:47:20.566635	47
-48	4	2	2024-10-16 19:47:20.725409	48
-\.
+INSERT INTO public.users_groups VALUES (2, 3, 1, '2024-06-17 16:16:13.466136', 2);
+INSERT INTO public.users_groups VALUES (2, 4, 1, '2024-06-17 16:16:22.703048', 3);
+INSERT INTO public.users_groups VALUES (3, 5, 1, '2024-06-17 16:21:19.054075', 4);
+INSERT INTO public.users_groups VALUES (6, 5, 2, '2024-10-16 18:12:04.135854', 6);
+INSERT INTO public.users_groups VALUES (7, 3, 2, '2024-10-16 18:20:53.025031', 7);
+INSERT INTO public.users_groups VALUES (8, 3, 2, '2024-10-16 18:20:59.50976', 8);
+INSERT INTO public.users_groups VALUES (9, 3, 2, '2024-10-16 18:21:19.271867', 9);
+INSERT INTO public.users_groups VALUES (26, 4, 2, '2024-10-16 19:01:12.947519', 26);
+INSERT INTO public.users_groups VALUES (24, 4, 2, '2024-10-16 19:01:12.727091', 24);
+INSERT INTO public.users_groups VALUES (30, 4, 2, '2024-10-16 19:01:13.394754', 30);
+INSERT INTO public.users_groups VALUES (32, 4, 2, '2024-10-16 19:03:37.269042', 32);
+INSERT INTO public.users_groups VALUES (28, 4, 2, '2024-10-16 19:01:13.174636', 28);
+INSERT INTO public.users_groups VALUES (21, 4, 2, '2024-10-16 19:01:12.39343', 21);
+INSERT INTO public.users_groups VALUES (15, 4, 2, '2024-10-16 19:01:11.41791', 15);
+INSERT INTO public.users_groups VALUES (10, 4, 2, '2024-10-16 18:21:19.351003', 10);
+INSERT INTO public.users_groups VALUES (14, 4, 2, '2024-10-16 18:50:56.429812', 14);
+INSERT INTO public.users_groups VALUES (13, 4, 2, '2024-10-16 18:50:55.163291', 13);
+INSERT INTO public.users_groups VALUES (31, 4, 2, '2024-10-16 19:01:13.52197', 31);
+INSERT INTO public.users_groups VALUES (11, 4, 2, '2024-10-16 18:21:19.552851', 11);
+INSERT INTO public.users_groups VALUES (19, 4, 2, '2024-10-16 19:01:12.194022', 19);
+INSERT INTO public.users_groups VALUES (12, 4, 2, '2024-10-16 18:50:54.253743', 12);
+INSERT INTO public.users_groups VALUES (25, 4, 2, '2024-10-16 19:01:12.840241', 25);
+INSERT INTO public.users_groups VALUES (29, 4, 2, '2024-10-16 19:01:13.306455', 29);
+INSERT INTO public.users_groups VALUES (22, 4, 2, '2024-10-16 19:01:12.501086', 22);
+INSERT INTO public.users_groups VALUES (27, 4, 2, '2024-10-16 19:01:13.053339', 27);
+INSERT INTO public.users_groups VALUES (20, 4, 2, '2024-10-16 19:01:12.290096', 20);
+INSERT INTO public.users_groups VALUES (23, 4, 2, '2024-10-16 19:01:12.613248', 23);
+INSERT INTO public.users_groups VALUES (16, 4, 2, '2024-10-16 19:01:11.647119', 16);
+INSERT INTO public.users_groups VALUES (17, 4, 2, '2024-10-16 19:01:11.806154', 17);
+INSERT INTO public.users_groups VALUES (18, 4, 2, '2024-10-16 19:01:12.076425', 18);
+INSERT INTO public.users_groups VALUES (33, 4, 2, '2024-10-16 19:46:17.506823', 33);
+INSERT INTO public.users_groups VALUES (34, 4, 2, '2024-10-16 19:46:17.836328', 34);
+INSERT INTO public.users_groups VALUES (35, 4, 2, '2024-10-16 19:46:18.010642', 35);
+INSERT INTO public.users_groups VALUES (36, 4, 2, '2024-10-16 19:46:18.183511', 36);
+INSERT INTO public.users_groups VALUES (37, 4, 2, '2024-10-16 19:46:18.333761', 37);
+INSERT INTO public.users_groups VALUES (38, 4, 2, '2024-10-16 19:46:18.46213', 38);
+INSERT INTO public.users_groups VALUES (39, 4, 2, '2024-10-16 19:46:18.591003', 39);
+INSERT INTO public.users_groups VALUES (40, 4, 2, '2024-10-16 19:47:19.604145', 40);
+INSERT INTO public.users_groups VALUES (41, 4, 2, '2024-10-16 19:47:19.741378', 41);
+INSERT INTO public.users_groups VALUES (42, 4, 2, '2024-10-16 19:47:19.880947', 42);
+INSERT INTO public.users_groups VALUES (43, 4, 2, '2024-10-16 19:47:20.010415', 43);
+INSERT INTO public.users_groups VALUES (44, 4, 2, '2024-10-16 19:47:20.114654', 44);
+INSERT INTO public.users_groups VALUES (45, 4, 2, '2024-10-16 19:47:20.246363', 45);
+INSERT INTO public.users_groups VALUES (46, 4, 2, '2024-10-16 19:47:20.359664', 46);
+INSERT INTO public.users_groups VALUES (47, 4, 2, '2024-10-16 19:47:20.566635', 47);
+INSERT INTO public.users_groups VALUES (48, 4, 2, '2024-10-16 19:47:20.725409', 48);
 
 
 --
