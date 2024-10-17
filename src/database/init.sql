@@ -20,10 +20,17 @@ SET row_security = off;
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
--- *not* creating schema, since initdb creates it
+CREATE SCHEMA public;
 
 
 ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
 
 --
 -- Name: create_user_groups_entry_for_admin(integer, integer); Type: PROCEDURE; Schema: public; Owner: postgres
@@ -138,7 +145,8 @@ CREATE TABLE public.groups (
     id integer NOT NULL,
     name text NOT NULL,
     created_by_user_id integer NOT NULL,
-    created timestamp without time zone DEFAULT now() NOT NULL
+    created timestamp without time zone DEFAULT now() NOT NULL,
+    identification_string text
 );
 
 
@@ -546,51 +554,51 @@ INSERT INTO public.devices VALUES (7, 'b3dc4051-4014-443a-ab49-c036c843f5c0', 4,
 -- Data for Name: groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.groups VALUES (2, 'test', 3, '2024-06-17 16:15:20.271736');
-INSERT INTO public.groups VALUES (3, 'test2', 5, '2024-06-17 16:20:41.127677');
-INSERT INTO public.groups VALUES (6, 'test3', 5, '2024-10-16 18:12:04.135854');
-INSERT INTO public.groups VALUES (27, 'Security Squad', 4, '2024-10-16 19:01:13.053339');
-INSERT INTO public.groups VALUES (31, 'Security Squad', 4, '2024-10-16 19:01:13.52197');
-INSERT INTO public.groups VALUES (23, 'Security Squad', 4, '2024-10-16 19:01:12.613248');
-INSERT INTO public.groups VALUES (16, 'Security Squad', 4, '2024-10-16 19:01:11.647119');
-INSERT INTO public.groups VALUES (7, 'Security Squad', 4, '2024-10-16 18:20:53.025031');
-INSERT INTO public.groups VALUES (26, 'Security Squad', 4, '2024-10-16 19:01:12.947519');
-INSERT INTO public.groups VALUES (28, 'Security Squad', 4, '2024-10-16 19:01:13.174636');
-INSERT INTO public.groups VALUES (30, 'Security Squad', 4, '2024-10-16 19:01:13.394754');
-INSERT INTO public.groups VALUES (22, 'Security Squad', 4, '2024-10-16 19:01:12.501086');
-INSERT INTO public.groups VALUES (18, 'Security Squad', 4, '2024-10-16 19:01:12.076425');
-INSERT INTO public.groups VALUES (24, 'Security Squad', 4, '2024-10-16 19:01:12.727091');
-INSERT INTO public.groups VALUES (19, 'Security Squad', 4, '2024-10-16 19:01:12.194022');
-INSERT INTO public.groups VALUES (20, 'Security Squad', 4, '2024-10-16 19:01:12.290096');
-INSERT INTO public.groups VALUES (21, 'Security Squad', 4, '2024-10-16 19:01:12.39343');
-INSERT INTO public.groups VALUES (9, 'Security Squad', 4, '2024-10-16 18:21:19.271867');
-INSERT INTO public.groups VALUES (29, 'Security Squad', 4, '2024-10-16 19:01:13.306455');
-INSERT INTO public.groups VALUES (25, 'Security Squad', 4, '2024-10-16 19:01:12.840241');
-INSERT INTO public.groups VALUES (32, 'Security Squad', 4, '2024-10-16 19:03:37.269042');
-INSERT INTO public.groups VALUES (17, 'Security Squad', 4, '2024-10-16 19:01:11.806154');
-INSERT INTO public.groups VALUES (8, 'Security Squad', 4, '2024-10-16 18:20:59.50976');
-INSERT INTO public.groups VALUES (11, 'Security Squad', 4, '2024-10-16 18:21:19.552851');
-INSERT INTO public.groups VALUES (10, 'Security Squad', 4, '2024-10-16 18:21:19.351003');
-INSERT INTO public.groups VALUES (13, 'Security Squad', 4, '2024-10-16 18:50:55.163291');
-INSERT INTO public.groups VALUES (12, 'Security Squad', 4, '2024-10-16 18:50:54.253743');
-INSERT INTO public.groups VALUES (14, 'Security Squad', 4, '2024-10-16 18:50:56.429812');
-INSERT INTO public.groups VALUES (15, 'Security Squad', 4, '2024-10-16 19:01:11.41791');
-INSERT INTO public.groups VALUES (33, 'Maks Gay Squad', 4, '2024-10-16 19:46:17.506823');
-INSERT INTO public.groups VALUES (34, 'Maks Gay Squad', 4, '2024-10-16 19:46:17.836328');
-INSERT INTO public.groups VALUES (35, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.010642');
-INSERT INTO public.groups VALUES (36, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.183511');
-INSERT INTO public.groups VALUES (37, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.333761');
-INSERT INTO public.groups VALUES (38, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.46213');
-INSERT INTO public.groups VALUES (39, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.591003');
-INSERT INTO public.groups VALUES (40, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.604145');
-INSERT INTO public.groups VALUES (41, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.741378');
-INSERT INTO public.groups VALUES (42, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.880947');
-INSERT INTO public.groups VALUES (43, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.010415');
-INSERT INTO public.groups VALUES (44, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.114654');
-INSERT INTO public.groups VALUES (45, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.246363');
-INSERT INTO public.groups VALUES (46, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.359664');
-INSERT INTO public.groups VALUES (47, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.566635');
-INSERT INTO public.groups VALUES (48, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.725409');
+INSERT INTO public.groups VALUES (2, 'test', 3, '2024-06-17 16:15:20.271736', NULL);
+INSERT INTO public.groups VALUES (3, 'test2', 5, '2024-06-17 16:20:41.127677', NULL);
+INSERT INTO public.groups VALUES (6, 'test3', 5, '2024-10-16 18:12:04.135854', NULL);
+INSERT INTO public.groups VALUES (27, 'Security Squad', 4, '2024-10-16 19:01:13.053339', NULL);
+INSERT INTO public.groups VALUES (31, 'Security Squad', 4, '2024-10-16 19:01:13.52197', NULL);
+INSERT INTO public.groups VALUES (23, 'Security Squad', 4, '2024-10-16 19:01:12.613248', NULL);
+INSERT INTO public.groups VALUES (16, 'Security Squad', 4, '2024-10-16 19:01:11.647119', NULL);
+INSERT INTO public.groups VALUES (7, 'Security Squad', 4, '2024-10-16 18:20:53.025031', NULL);
+INSERT INTO public.groups VALUES (26, 'Security Squad', 4, '2024-10-16 19:01:12.947519', NULL);
+INSERT INTO public.groups VALUES (28, 'Security Squad', 4, '2024-10-16 19:01:13.174636', NULL);
+INSERT INTO public.groups VALUES (30, 'Security Squad', 4, '2024-10-16 19:01:13.394754', NULL);
+INSERT INTO public.groups VALUES (22, 'Security Squad', 4, '2024-10-16 19:01:12.501086', NULL);
+INSERT INTO public.groups VALUES (18, 'Security Squad', 4, '2024-10-16 19:01:12.076425', NULL);
+INSERT INTO public.groups VALUES (24, 'Security Squad', 4, '2024-10-16 19:01:12.727091', NULL);
+INSERT INTO public.groups VALUES (19, 'Security Squad', 4, '2024-10-16 19:01:12.194022', NULL);
+INSERT INTO public.groups VALUES (20, 'Security Squad', 4, '2024-10-16 19:01:12.290096', NULL);
+INSERT INTO public.groups VALUES (21, 'Security Squad', 4, '2024-10-16 19:01:12.39343', NULL);
+INSERT INTO public.groups VALUES (9, 'Security Squad', 4, '2024-10-16 18:21:19.271867', NULL);
+INSERT INTO public.groups VALUES (29, 'Security Squad', 4, '2024-10-16 19:01:13.306455', NULL);
+INSERT INTO public.groups VALUES (25, 'Security Squad', 4, '2024-10-16 19:01:12.840241', NULL);
+INSERT INTO public.groups VALUES (32, 'Security Squad', 4, '2024-10-16 19:03:37.269042', NULL);
+INSERT INTO public.groups VALUES (17, 'Security Squad', 4, '2024-10-16 19:01:11.806154', NULL);
+INSERT INTO public.groups VALUES (8, 'Security Squad', 4, '2024-10-16 18:20:59.50976', NULL);
+INSERT INTO public.groups VALUES (11, 'Security Squad', 4, '2024-10-16 18:21:19.552851', NULL);
+INSERT INTO public.groups VALUES (10, 'Security Squad', 4, '2024-10-16 18:21:19.351003', NULL);
+INSERT INTO public.groups VALUES (13, 'Security Squad', 4, '2024-10-16 18:50:55.163291', NULL);
+INSERT INTO public.groups VALUES (12, 'Security Squad', 4, '2024-10-16 18:50:54.253743', NULL);
+INSERT INTO public.groups VALUES (14, 'Security Squad', 4, '2024-10-16 18:50:56.429812', NULL);
+INSERT INTO public.groups VALUES (15, 'Security Squad', 4, '2024-10-16 19:01:11.41791', NULL);
+INSERT INTO public.groups VALUES (33, 'Maks Gay Squad', 4, '2024-10-16 19:46:17.506823', NULL);
+INSERT INTO public.groups VALUES (34, 'Maks Gay Squad', 4, '2024-10-16 19:46:17.836328', NULL);
+INSERT INTO public.groups VALUES (35, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.010642', NULL);
+INSERT INTO public.groups VALUES (36, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.183511', NULL);
+INSERT INTO public.groups VALUES (37, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.333761', NULL);
+INSERT INTO public.groups VALUES (38, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.46213', NULL);
+INSERT INTO public.groups VALUES (39, 'Maks Gay Squad', 4, '2024-10-16 19:46:18.591003', NULL);
+INSERT INTO public.groups VALUES (40, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.604145', NULL);
+INSERT INTO public.groups VALUES (41, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.741378', NULL);
+INSERT INTO public.groups VALUES (42, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:19.880947', NULL);
+INSERT INTO public.groups VALUES (43, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.010415', NULL);
+INSERT INTO public.groups VALUES (44, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.114654', NULL);
+INSERT INTO public.groups VALUES (45, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.246363', NULL);
+INSERT INTO public.groups VALUES (46, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.359664', NULL);
+INSERT INTO public.groups VALUES (47, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.566635', NULL);
+INSERT INTO public.groups VALUES (48, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.725409', NULL);
 
 
 --
@@ -856,6 +864,13 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE UNIQUE INDEX devices_device_uuid_uindex ON public.devices USING btree (device_uuid);
+
+
+--
+-- Name: groups_identification_string_uindex; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX groups_identification_string_uindex ON public.groups USING btree (identification_string);
 
 
 --
