@@ -20,17 +20,10 @@ SET row_security = off;
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
-CREATE SCHEMA public;
+-- *not* creating schema, since initdb creates it
 
 
 ALTER SCHEMA public OWNER TO postgres;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
 
 --
 -- Name: create_user_groups_entry_for_admin(integer, integer); Type: PROCEDURE; Schema: public; Owner: postgres
@@ -547,6 +540,7 @@ COPY public.devices (id, device_uuid, user_id, created, push_token) FROM stdin;
 4	1234567	4	2024-06-17 16:17:00.150695	1234
 5	12345678	3	2024-06-17 16:19:20.905372	12345
 6	123456789	5	2024-06-17 16:20:17.652344	123456
+7	b3dc4051-4014-443a-ab49-c036c843f5c0	4	2024-10-16 18:20:33.069338	\N
 \.
 
 
@@ -558,6 +552,48 @@ COPY public.groups (id, name, created_by_user_id, created) FROM stdin;
 2	test	3	2024-06-17 16:15:20.271736
 3	test2	5	2024-06-17 16:20:41.127677
 6	test3	5	2024-10-16 18:12:04.135854
+27	Security Squad	4	2024-10-16 19:01:13.053339
+31	Security Squad	4	2024-10-16 19:01:13.52197
+23	Security Squad	4	2024-10-16 19:01:12.613248
+16	Security Squad	4	2024-10-16 19:01:11.647119
+7	Security Squad	4	2024-10-16 18:20:53.025031
+26	Security Squad	4	2024-10-16 19:01:12.947519
+28	Security Squad	4	2024-10-16 19:01:13.174636
+30	Security Squad	4	2024-10-16 19:01:13.394754
+22	Security Squad	4	2024-10-16 19:01:12.501086
+18	Security Squad	4	2024-10-16 19:01:12.076425
+24	Security Squad	4	2024-10-16 19:01:12.727091
+19	Security Squad	4	2024-10-16 19:01:12.194022
+20	Security Squad	4	2024-10-16 19:01:12.290096
+21	Security Squad	4	2024-10-16 19:01:12.39343
+9	Security Squad	4	2024-10-16 18:21:19.271867
+29	Security Squad	4	2024-10-16 19:01:13.306455
+25	Security Squad	4	2024-10-16 19:01:12.840241
+32	Security Squad	4	2024-10-16 19:03:37.269042
+17	Security Squad	4	2024-10-16 19:01:11.806154
+8	Security Squad	4	2024-10-16 18:20:59.50976
+11	Security Squad	4	2024-10-16 18:21:19.552851
+10	Security Squad	4	2024-10-16 18:21:19.351003
+13	Security Squad	4	2024-10-16 18:50:55.163291
+12	Security Squad	4	2024-10-16 18:50:54.253743
+14	Security Squad	4	2024-10-16 18:50:56.429812
+15	Security Squad	4	2024-10-16 19:01:11.41791
+33	Maks Gay Squad	4	2024-10-16 19:46:17.506823
+34	Maks Gay Squad	4	2024-10-16 19:46:17.836328
+35	Maks Gay Squad	4	2024-10-16 19:46:18.010642
+36	Maks Gay Squad	4	2024-10-16 19:46:18.183511
+37	Maks Gay Squad	4	2024-10-16 19:46:18.333761
+38	Maks Gay Squad	4	2024-10-16 19:46:18.46213
+39	Maks Gay Squad	4	2024-10-16 19:46:18.591003
+40	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:19.604145
+41	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:19.741378
+42	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:19.880947
+43	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.010415
+44	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.114654
+45	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.246363
+46	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.359664
+47	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.566635
+48	Maks is Gay Because he does not pay attention	4	2024-10-16 19:47:20.725409
 \.
 
 
@@ -640,6 +676,48 @@ COPY public.users_groups (group_id, user_id, roles_permissions_id, created, id) 
 2	4	1	2024-06-17 16:16:22.703048	3
 3	5	1	2024-06-17 16:21:19.054075	4
 6	5	2	2024-10-16 18:12:04.135854	6
+7	3	2	2024-10-16 18:20:53.025031	7
+8	3	2	2024-10-16 18:20:59.50976	8
+9	3	2	2024-10-16 18:21:19.271867	9
+26	4	2	2024-10-16 19:01:12.947519	26
+24	4	2	2024-10-16 19:01:12.727091	24
+30	4	2	2024-10-16 19:01:13.394754	30
+32	4	2	2024-10-16 19:03:37.269042	32
+28	4	2	2024-10-16 19:01:13.174636	28
+21	4	2	2024-10-16 19:01:12.39343	21
+15	4	2	2024-10-16 19:01:11.41791	15
+10	4	2	2024-10-16 18:21:19.351003	10
+14	4	2	2024-10-16 18:50:56.429812	14
+13	4	2	2024-10-16 18:50:55.163291	13
+31	4	2	2024-10-16 19:01:13.52197	31
+11	4	2	2024-10-16 18:21:19.552851	11
+19	4	2	2024-10-16 19:01:12.194022	19
+12	4	2	2024-10-16 18:50:54.253743	12
+25	4	2	2024-10-16 19:01:12.840241	25
+29	4	2	2024-10-16 19:01:13.306455	29
+22	4	2	2024-10-16 19:01:12.501086	22
+27	4	2	2024-10-16 19:01:13.053339	27
+20	4	2	2024-10-16 19:01:12.290096	20
+23	4	2	2024-10-16 19:01:12.613248	23
+16	4	2	2024-10-16 19:01:11.647119	16
+17	4	2	2024-10-16 19:01:11.806154	17
+18	4	2	2024-10-16 19:01:12.076425	18
+33	4	2	2024-10-16 19:46:17.506823	33
+34	4	2	2024-10-16 19:46:17.836328	34
+35	4	2	2024-10-16 19:46:18.010642	35
+36	4	2	2024-10-16 19:46:18.183511	36
+37	4	2	2024-10-16 19:46:18.333761	37
+38	4	2	2024-10-16 19:46:18.46213	38
+39	4	2	2024-10-16 19:46:18.591003	39
+40	4	2	2024-10-16 19:47:19.604145	40
+41	4	2	2024-10-16 19:47:19.741378	41
+42	4	2	2024-10-16 19:47:19.880947	42
+43	4	2	2024-10-16 19:47:20.010415	43
+44	4	2	2024-10-16 19:47:20.114654	44
+45	4	2	2024-10-16 19:47:20.246363	45
+46	4	2	2024-10-16 19:47:20.359664	46
+47	4	2	2024-10-16 19:47:20.566635	47
+48	4	2	2024-10-16 19:47:20.725409	48
 \.
 
 
@@ -647,14 +725,14 @@ COPY public.users_groups (group_id, user_id, roles_permissions_id, created, id) 
 -- Name: devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.devices_id_seq', 6, true);
+SELECT pg_catalog.setval('public.devices_id_seq', 7, true);
 
 
 --
 -- Name: groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.groups_id_seq', 6, true);
+SELECT pg_catalog.setval('public.groups_id_seq', 48, true);
 
 
 --
@@ -703,7 +781,7 @@ SELECT pg_catalog.setval('public.user_permissions_id_seq', 2, true);
 -- Name: users_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_groups_id_seq', 6, true);
+SELECT pg_catalog.setval('public.users_groups_id_seq', 48, true);
 
 
 --
