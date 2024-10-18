@@ -6,8 +6,10 @@ import { JoinUserGroup, UserGroup } from '@interfaces/userGroup.interface';
 @Service()
 export class UserGroupService {
   async getGroupsByUserId(userId: number) {
-    const sql =
-      'Select groups.id, groups.created_by_user_id, groups.name FROM users_groups JOIN groups on users_groups.group_id=groups.id WHERE user_id = $1;';
+    const sql = `Select groups.id, groups.created_by_user_id, groups.name,  users_groups.roles_permissions_id
+                   FROM users_groups
+                   JOIN groups on users_groups.group_id=groups.id
+                   WHERE user_id = $1;`;
     return await pg
       .query(sql, [userId])
       .then(result => {

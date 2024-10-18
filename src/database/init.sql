@@ -20,17 +20,10 @@ SET row_security = off;
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
-CREATE SCHEMA public;
+-- *not* creating schema, since initdb creates it
 
 
 ALTER SCHEMA public OWNER TO postgres;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
 
 --
 -- Name: create_user_groups_entry_for_admin(integer, integer); Type: PROCEDURE; Schema: public; Owner: postgres
@@ -599,6 +592,10 @@ INSERT INTO public.groups VALUES (45, 'Maks is Gay Because he does not pay atten
 INSERT INTO public.groups VALUES (46, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.359664', NULL);
 INSERT INTO public.groups VALUES (47, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.566635', NULL);
 INSERT INTO public.groups VALUES (48, 'Maks is Gay Because he does not pay attention', 4, '2024-10-16 19:47:20.725409', NULL);
+INSERT INTO public.groups VALUES (49, 'test', 4, '2024-10-17 20:13:25.377688', 'test');
+INSERT INTO public.groups VALUES (50, 'Poes', 4, '2024-10-18 17:21:10.718704', '1U5-N88-V24');
+INSERT INTO public.groups VALUES (51, 'Mjlnjbjbjb', 4, '2024-10-18 18:57:20.645169', 'G3O-6P2-8PU');
+INSERT INTO public.groups VALUES (52, 'Mjlnjbjbjb', 4, '2024-10-18 18:59:59.267865', '83E-LG6-MJH');
 
 
 --
@@ -638,6 +635,8 @@ INSERT INTO public.push_notifications VALUES (2, 3, '{"body":"test"}', 'test', '
 
 INSERT INTO public.roles VALUES (1, 'user');
 INSERT INTO public.roles VALUES (2, 'group_admin');
+INSERT INTO public.roles VALUES (3, 'group_pending');
+INSERT INTO public.roles VALUES (4, 'group_user');
 
 
 --
@@ -646,6 +645,8 @@ INSERT INTO public.roles VALUES (2, 'group_admin');
 
 INSERT INTO public.roles_permissions VALUES (1, 1, 1);
 INSERT INTO public.roles_permissions VALUES (2, 2, 1);
+INSERT INTO public.roles_permissions VALUES (3, 3, 1);
+INSERT INTO public.roles_permissions VALUES (4, 4, 1);
 
 
 --
@@ -707,6 +708,9 @@ INSERT INTO public.users_groups VALUES (45, 4, 2, '2024-10-16 19:47:20.246363', 
 INSERT INTO public.users_groups VALUES (46, 4, 2, '2024-10-16 19:47:20.359664', 46);
 INSERT INTO public.users_groups VALUES (47, 4, 2, '2024-10-16 19:47:20.566635', 47);
 INSERT INTO public.users_groups VALUES (48, 4, 2, '2024-10-16 19:47:20.725409', 48);
+INSERT INTO public.users_groups VALUES (49, 4, 2, '2024-10-17 20:13:25.377688', 49);
+INSERT INTO public.users_groups VALUES (51, 4, 2, '2024-10-18 18:57:20.645169', 51);
+INSERT INTO public.users_groups VALUES (52, 4, 2, '2024-10-18 18:59:59.267865', 52);
 
 
 --
@@ -720,7 +724,7 @@ SELECT pg_catalog.setval('public.devices_id_seq', 7, true);
 -- Name: groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.groups_id_seq', 48, true);
+SELECT pg_catalog.setval('public.groups_id_seq', 52, true);
 
 
 --
@@ -755,21 +759,21 @@ SELECT pg_catalog.setval('public.push_notifications_id_seq', 2, true);
 -- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.roles_id_seq', 2, true);
+SELECT pg_catalog.setval('public.roles_id_seq', 4, true);
 
 
 --
 -- Name: user_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.user_permissions_id_seq', 2, true);
+SELECT pg_catalog.setval('public.user_permissions_id_seq', 4, true);
 
 
 --
 -- Name: users_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_groups_id_seq', 48, true);
+SELECT pg_catalog.setval('public.users_groups_id_seq', 52, true);
 
 
 --
