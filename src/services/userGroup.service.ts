@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import pg from '@database';
 import { HttpException } from '@exceptions/httpException';
-import { UserGroup } from '@interfaces/userGroup.interface';
+import { JoinUserGroup, UserGroup } from '@interfaces/userGroup.interface';
 
 @Service()
 export class UserGroupService {
@@ -80,4 +80,25 @@ export class UserGroupService {
         return err;
       });
   };
+
+  async joinUserGroup(joinUserGroup: JoinUserGroup) {
+    const { user_id, identification_string } = joinUserGroup;
+    const sql = `INSERT INTO users_groups (group_id, user_id, role_permissions_id)
+                    VALUES ((SELECT id FROM groups WHERE identification_string = $1), $2, 3 )
+                  WHERE group_id = (SELECT id FROM groups WHERE identification_string = $1)
+                  RETURNING *;`;
+    const values = [identification_string, user_id];
+    return await pg
+      .query(sql, values)
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => {
+        return err;
+      });
+  }
 }
