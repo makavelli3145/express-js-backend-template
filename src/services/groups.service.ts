@@ -5,7 +5,6 @@ import { Group } from '@interfaces/group.interface';
 @Service()
 export class GroupsService {
   public createGroup = async (group: Group): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    console.log("Group payload data: ", group);
     const { name, created_by_user_id, identification_string } = group;
     const sql = `INSERT INTO groups (name, created_by_user_id, identification_string) VALUES ( $1, $2, $3) RETURNING *`;
     return await pg
