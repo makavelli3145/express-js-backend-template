@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
-import {CreateUserDto} from "@dtos/users.dto";
+import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
+import { CreateUserDto } from '@dtos/users.dto';
 
 export class CreateUserGroupDto {
   @IsNumber()
@@ -13,12 +13,22 @@ export class CreateUserGroupDto {
   public user_group_permissions: number;
 }
 
-export class UpdateUserGroupDto extends CreateUserGroupDto{
-    @IsNumber()
+export class UpdateUserGroupDto extends CreateUserGroupDto {
+  @IsNumber()
   @IsNotEmpty()
   id: number;
 }
-export class DeleteUserGroupDto extends CreateUserGroupDto{
+
+export class JoinUserGroupDto {
+  @IsNumber()
+  @IsNotEmpty()
+  user_id: number;
+
+  @IsString()
+  @Length(11, 11)
+  identification_string: string;
+}
+export class DeleteUserGroupDto extends CreateUserGroupDto {
   @IsNumber()
   @IsNotEmpty()
   id: number;

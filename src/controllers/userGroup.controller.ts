@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
 import { UserGroupService } from '@services/userGroup.service';
-import { UserGroup } from '@interfaces/userGroup.interface';
+import { UserGroup, JoinUserGroup } from '@interfaces/userGroup.interface';
 
 export class UserGroupController {
   private userGroupService = Container.get(UserGroupService);
@@ -10,7 +10,7 @@ export class UserGroupController {
     try {
       // Extracting user id from URL parameters and convert userId to number
       const userId = Number(req.query.id);
-      this.userGroupService.getGroupsByUserId(userId).then((result) => {
+      this.userGroupService.getGroupsByUserId(userId).then(result => {
         if (result) {
           res.status(200).json(result);
         } else {
@@ -26,7 +26,7 @@ export class UserGroupController {
     try {
       // Extracting user id from URL parameters and convert userId to number
       const groupId = Number(req.query.id);
-      this.userGroupService.getAllUsersByGroupId(groupId).then((result) => {
+      this.userGroupService.getAllUsersByGroupId(groupId).then(result => {
         if (result) {
           res.status(200).json(result);
         } else {
@@ -52,35 +52,48 @@ export class UserGroupController {
     }
   };
 
-
   public updateUserGroup = (req: Request, res: Response, next: NextFunction) => {
     const reqUserGroup = req.body;
-    try{
+    try {
       this.userGroupService.updateUserGroup(reqUserGroup).then(result => {
-        if(result){
+        if (result) {
           res.status(200).json(result);
-        }else{
+        } else {
           res.status(500).send('Failed to update userGroup');
         }
       });
-    }catch(err){
+    } catch (err) {
       next(err);
     }
   };
 
-  public deleteUserGroup = (req: Request, res: Response, next: NextFunction) =>{
-    try{
+  public deleteUserGroup = (req: Request, res: Response, next: NextFunction) => {
+    try {
       const reqUserGroup: UserGroup = req.body;
-      this.userGroupService.deleteUserGroup(reqUserGroup).then(result =>{
-        if(result){
+      this.userGroupService.deleteUserGroup(reqUserGroup).then(result => {
+        if (result) {
           res.status(200).json(result);
-        }else{
+        } else {
           res.status(500).send('Could not delete users group');
         }
-      })
-    }catch(error){
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  JoinUserGroup(req: Request, res: Response, next: NextFunction) {
+    try {
+      const joinUserGroup: JoinUserGroup = req.body;
+      this.userGroupService.joinUserGroup(joinUserGroup).then(result => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res.status(500).send('Error creating user group');
+        }
+      });
+    } catch (error) {
       next(error);
     }
   }
-
 }
