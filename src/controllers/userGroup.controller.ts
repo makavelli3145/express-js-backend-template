@@ -84,9 +84,10 @@ export class UserGroupController {
 
   JoinUserGroup(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log("")
       const joinUserGroup: JoinUserGroup = req.body;
+      console.log("testing before calling userGroupService");
       this.userGroupService.joinUserGroup(joinUserGroup).then(result => {
+        console.log("testing after calling userGroupService");
         if (result) {
           res.status(200).json(result);
         } else {

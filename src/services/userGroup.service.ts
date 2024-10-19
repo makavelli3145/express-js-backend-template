@@ -83,16 +83,17 @@ export class UserGroupService {
       });
   };
 
-  async joinUserGroup(joinUserGroup: JoinUserGroup) {
+  public async joinUserGroup(joinUserGroup: JoinUserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> {
+    console.log("JoinUserGroupDTo is: ", joinUserGroup);
     const { user_id, identification_string } = joinUserGroup;
-    const sql = `INSERT INTO users_groups (group_id, user_id, role_permissions_id)
-                    VALUES ((SELECT id FROM groups WHERE identification_string = $1), $2, 3 )
-                  WHERE group_id = (SELECT id FROM groups WHERE identification_string = $1)
-                  RETURNING *;`;
+    const sql = `INSERT INTO users_groups (group_id, user_id, roles_permissions_id)
+                 VALUES ((SELECT id FROM groups WHERE identification_string = $1), $2, 3)
+                   RETURNING *;`;
     const values = [identification_string, user_id];
     return await pg
       .query(sql, values)
       .then(result => {
+        console.log("joinGroups query result: ", result);
         if (result.rowCount > 0) {
           return result.rows[0];
         } else {
