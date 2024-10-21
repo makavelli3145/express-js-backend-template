@@ -15,7 +15,7 @@ import * as console from 'console';
 @ValidatorConstraint({ name: 'isValidSouthAfricanId', async: false })
 class IsValidSouthAfricanId implements ValidatorConstraintInterface {
   validate(idNumber: string, args: ValidationArguments) {
-    if(typeof idNumber !== 'string' || !idNumber.trim()){
+    if (typeof idNumber !== 'string' || !idNumber.trim()) {
       return false;
     }
 

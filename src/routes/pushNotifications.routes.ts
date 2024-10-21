@@ -5,9 +5,9 @@ import { CreatePushNotificationDto } from '@dtos/pushNotifications.dto';
 import { PushNotificationsController } from '@controllers/pushNotifications.controller';
 import { AuthMiddleware } from '@middlewares/auth.middleware';
 
-export class GroupRoute implements Routes {
+export class PushNotificationsRoutesRoute implements Routes {
   public router = Router();
-  public pushNotifications = new PushNotificationsController();
+  private pushNotifications = new PushNotificationsController();
 
   constructor() {
     this.initializeRoutes();

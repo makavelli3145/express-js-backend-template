@@ -1,15 +1,4 @@
 services:
-  proxy-solace:
-    image: nginx:alpine
-    container_name: proxy-solace
-    ports:
-      - "8084:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    restart: unless-stopped
-    networks:
-      - backend-solace
-
   solace-api:
     container_name: solace-api
     build:
@@ -51,7 +40,7 @@ services:
       POSTGRES_PASSWORD: 44*^i33xs7G2V^z%
       POSTGRES_DB: public
     volumes:
-      # - ./postgresdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
     networks:
@@ -63,8 +52,8 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redisdata:/root/redis
-      - redisdata:/usr/local/etc/redis/redis.conf
+      - redis_data:/root/redis
+      - redis_data:/usr/local/etc/redis/redis.conf
     environment:
       - REDIS_PASSWORD="+Uly7Ezx/VkukgCzRpiicVF2JGtZnK5eoaeIQuDADyIY7lEwnL1FsKK5ptjhC/53"
       - REDIS_PORT=6379
@@ -79,7 +68,7 @@ networks:
     driver: bridge
 
 volumes:
-  data:
+  postgres_data:
     driver: local
-  redisdata:
+  redis_data:
     driver: local

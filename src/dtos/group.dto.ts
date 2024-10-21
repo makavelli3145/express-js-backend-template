@@ -8,6 +8,10 @@ export class CreateGroupDto {
   @IsNumber()
   @IsNotEmpty()
   public created_by_user_id: number;
+
+  @IsString()
+  @IsNotEmpty()
+  identification_string: string;
 }
 
 export class DeleteGroupDto extends CreateGroupDto{

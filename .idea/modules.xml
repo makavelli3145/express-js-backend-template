@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../cerberus/.idea/cerberus.iml" filepath="$PROJECT_DIR$/../cerberus/.idea/cerberus.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/solace-api.iml" filepath="$PROJECT_DIR$/.idea/solace-api.iml" />
     </modules>
   </component>

@@ -5,10 +5,10 @@ import { Group } from '@interfaces/group.interface';
 @Service()
 export class GroupsService {
   public createGroup = async (group: Group): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { name, created_by_user_id } = group;
-    const sql = `INSERT INTO groups (name, created_by_user_id) VALUES ( $1, $2) RETURNING *`;
+    const { name, created_by_user_id, identification_string } = group;
+    const sql = `INSERT INTO groups (name, created_by_user_id, identification_string) VALUES ( $1, $2, $3) RETURNING *`;
     return await pg
-      .query(sql, [name, created_by_user_id])
+      .query(sql, [name, created_by_user_id, identification_string])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
@@ -49,4 +49,5 @@ export class GroupsService {
       })
       .catch(err => err);
   }
+
 }

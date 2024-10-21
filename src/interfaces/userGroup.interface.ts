@@ -4,3 +4,8 @@ export interface UserGroup {
   user_group_permissions: number;
   id?: number;
 }
+
+export interface JoinUserGroup {
+  user_id: number;
+  identification_string: string;
+}
