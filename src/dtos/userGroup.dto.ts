@@ -10,7 +10,7 @@ export class CreateUserGroupDto {
   public group_id: number;
   @IsNumber()
   @IsNotEmpty()
-  public user_group_permissions: number;
+  public roles_permissions_id: number;
 }
 
 export class UpdateUserGroupDto extends CreateUserGroupDto {

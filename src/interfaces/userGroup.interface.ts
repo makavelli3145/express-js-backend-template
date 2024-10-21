@@ -1,7 +1,7 @@
 export interface UserGroup {
   group_id: number;
   user_id: number;
-  user_group_permissions: number;
+  roles_permissions_id: number;
   id?: number;
 }
 
