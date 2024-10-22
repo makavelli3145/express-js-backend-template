@@ -23,7 +23,10 @@ export class UserGroupService {
   }
 
   async getAllUsersByGroupId(groupId: number) {
-    const sql = 'Select * FROM users_groups WHERE group_id = $1;';
+    const sql = `SELECT users_groups.*, users.name
+               FROM users_groups
+               JOIN users ON users_groups.user_id = users.id
+               WHERE users_groups.group_id = $1;`;
     return await pg
       .query(sql, [groupId])
       .then(result => {
@@ -35,6 +38,7 @@ export class UserGroupService {
       })
       .catch(err => err);
   }
+
   public createUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
     const { user_id, group_id, roles_permissions_id } = reqUserGroup;
     const sql = `
