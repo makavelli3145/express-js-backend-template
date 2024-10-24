@@ -23,7 +23,6 @@ export class UserGroupService {
   }
 
   async getAllUsersByGroupId(groupId: number, user_id: number) {
-    console.log(user_id);
     let sql = `SELECT  users_groups.roles_permissions_id FROM users_groups WHERE user_id = $1 and group_id = $2;`;
     return await pg
       .query(sql, [user_id, groupId])
