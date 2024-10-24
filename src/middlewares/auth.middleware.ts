@@ -19,7 +19,7 @@ export const JoinGroupsPermissionMiddleware = (req: Request, res: Response, next
       console.error(err);
       res.status(500).json({ error: 'server error' });
     } else if (result.rowCount > 0) {
-      if (result.rows[0].cnt === 1) {
+      if (parseInt(result.rows[0].cnt, 10) === 1) {
         next();
       } else {
         res.status(401).json({ error: 'unauthorized group transaction' });
