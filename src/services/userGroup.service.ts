@@ -84,7 +84,6 @@ export class UserGroupService {
   };
 
   public async joinUserGroup(joinUserGroup: JoinUserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> {
-    console.log("JoinUserGroupDTo is: ", joinUserGroup);
     const { user_id, identification_string } = joinUserGroup;
     const sql = `INSERT INTO users_groups (group_id, user_id, roles_permissions_id)
                  VALUES ((SELECT id FROM groups WHERE identification_string = $1), $2, 3)
@@ -93,7 +92,6 @@ export class UserGroupService {
     return await pg
       .query(sql, values)
       .then(result => {
-        console.log("joinGroups query result: ", result);
         if (result.rowCount > 0) {
           return result.rows[0];
         } else {
