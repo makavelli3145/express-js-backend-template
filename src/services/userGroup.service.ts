@@ -22,18 +22,48 @@ export class UserGroupService {
       .catch(err => err);
   }
 
-  async getAllUsersByGroupId(groupId: number) {
-    const sql = `SELECT users_groups.*, users.name
+  async getAllUsersByGroupId(groupId: number, user_id: number) {
+    console.log(user_id);
+    let sql = `SELECT  users_groups.roles_permissions_id FROM users_groups WHERE user_id = $1 and group_id = $2;`;
+    return await pg
+      .query(sql, [user_id, groupId])
+      .then(async result => {
+        if (result.rowCount > 0) {
+          const permissions = result.rows[0].roles_permissions_id;
+          switch (permissions) {
+            case 2:
+              sql = `SELECT users_groups.*, users.name
                FROM users_groups
                JOIN users ON users_groups.user_id = users.id
                WHERE users_groups.group_id = $1;`;
-    return await pg
-      .query(sql, [groupId])
-      .then(result => {
-        if (result.rowCount > 0) {
-          return result.rows;
-        } else {
-          return false;
+              return await pg
+                .query(sql, [groupId])
+                .then(result => {
+                  if (result.rowCount > 0) {
+                    return result.rows;
+                  } else {
+                    return [];
+                  }
+                })
+                .catch(err => err);
+            case 3:
+              return [];
+            case 4:
+              sql = `SELECT users_groups.*, users.name
+               FROM users_groups
+               JOIN users ON users_groups.user_id = users.id
+               WHERE users_groups.group_id = $1 and users_groups.roles_permissions_id  = 2 OR  users_groups.roles_permissions_id = 4;`;
+              return await pg
+                .query(sql, [groupId])
+                .then(result => {
+                  if (result.rowCount > 0) {
+                    return result.rows;
+                  } else {
+                    return [];
+                  }
+                })
+                .catch(err => err);
+          }
         }
       })
       .catch(err => err);
