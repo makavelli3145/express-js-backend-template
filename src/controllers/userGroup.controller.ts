@@ -26,11 +26,12 @@ export class UserGroupController {
     try {
       // Extracting user id from URL parameters and convert userId to number
       const groupId = Number(req.query.id);
-      this.userGroupService.getAllUsersByGroupId(groupId).then(result => {
+      const user_id = req.session.userId;
+      this.userGroupService.getAllUsersByGroupId(groupId, user_id).then(result => {
         if (result) {
           res.status(200).json(result);
         } else {
-          res.status(500).send('a group could not be created at this time');
+          res.status(500).send(`users could not be found for group with id: ${groupId}`);
         }
       });
     } catch (error) {
