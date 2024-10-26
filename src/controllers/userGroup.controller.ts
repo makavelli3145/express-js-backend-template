@@ -82,7 +82,7 @@ export class UserGroupController {
     }
   };
 
-  JoinUserGroup(req: Request, res: Response, next: NextFunction) {
+  public JoinUserGroup = (req: Request, res: Response, next: NextFunction) => {
     try {
       const joinUserGroup: JoinUserGroup = req.body;
       this.userGroupService.joinUserGroup(joinUserGroup).then(result => {
@@ -95,5 +95,5 @@ export class UserGroupController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 }

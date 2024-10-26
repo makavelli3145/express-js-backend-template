@@ -83,24 +83,31 @@ export class UserGroupService {
       });
   };
 
-  async joinUserGroup(joinUserGroup: JoinUserGroup) {
+  public joinUserGroup = async (joinUserGroup: JoinUserGroup) => {
     const { user_id, identification_string } = joinUserGroup;
-    const sql = `INSERT INTO users_groups (group_id, user_id, role_permissions_id)
-                    VALUES ((SELECT id FROM groups WHERE identification_string = $1), $2, 3 )
-                  WHERE group_id = (SELECT id FROM groups WHERE identification_string = $1)
+    let sql = `SELECT id FROM groups WHERE identification_string = $1`;
+    return await pg.query(sql, [identification_string]).then(async result => {
+      if (result.rowCount > 0) {
+        const id = result.rows[0].id;
+        sql = `INSERT INTO users_groups (group_id, user_id, roles_permissions_id)
+                    VALUES ($2, $1, 3 )
                   RETURNING *;`;
-    const values = [identification_string, user_id];
-    return await pg
-      .query(sql, values)
-      .then(result => {
-        if (result.rowCount > 0) {
-          return result.rows[0];
-        } else {
-          return false;
-        }
-      })
-      .catch(err => {
-        return err;
-      });
-  }
+        const values = [user_id, id];
+        return await pg
+          .query(sql, values)
+          .then(result => {
+            if (result.rowCount > 0) {
+              return result.rows[0];
+            } else {
+              return false;
+            }
+          })
+          .catch(err => {
+            return err;
+          });
+      } else {
+        throw new Error('no groups associated with the identification string');
+      }
+    });
+  };
 }
