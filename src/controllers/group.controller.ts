@@ -20,6 +20,22 @@ export class GroupController {
     }
   };
 
+  public getGroupsByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Extracting user id from URL parameters and convert userId to number
+      const userId = Number(req.query.id);
+      this.groupService.getGroupsByUserId(userId).then(result => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res.status(500).send('a group could not be created at this time');
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public deleteGroup = (req:Request, res:Response, next:NextFunction) =>{
     try{
       const group:Group = req.body;

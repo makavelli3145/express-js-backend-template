@@ -17,5 +17,6 @@ export class GroupRoute implements Routes {
     this.router.post('/groups/create', AuthMiddleware, ValidationMiddleware(CreateGroupDto), this.group.createGroup);
     this.router.delete('/groups/delete', AuthMiddleware, ValidationMiddleware(DeleteGroupDto), this.group.deleteGroup);
     this.router.put('/groups/update', AuthMiddleware, ValidationMiddleware(UpdateGroupDto), this.group.updateGroup);
+    this.router.get('/groups/user', AuthMiddleware, this.group.getGroupsByUserId);
   }
 }

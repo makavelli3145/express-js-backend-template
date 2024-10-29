@@ -5,24 +5,8 @@ import { JoinUserGroup, UserGroup } from '@interfaces/userGroup.interface';
 
 @Service()
 export class UserGroupService {
-  async getGroupsByUserId(userId: number) {
-    const sql = `Select groups.id, groups.created_by_user_id, groups.name,  users_groups.roles_permissions_id
-                   FROM users_groups
-                   JOIN groups on users_groups.group_id=groups.id
-                   WHERE user_id = $1;`;
-    return await pg
-      .query(sql, [userId])
-      .then(result => {
-        if (result.rowCount > 0) {
-          return result.rows;
-        } else {
-          return false;
-        }
-      })
-      .catch(err => err);
-  }
 
-  async getAllUsersByGroupId(groupId: number, user_id: number) {
+  async getUserGroupsByGroupId(groupId: number, user_id: number) {
     let sql = `SELECT  users_groups.roles_permissions_id FROM users_groups WHERE user_id = $1 and group_id = $2;`;
     return await pg
       .query(sql, [user_id, groupId])
@@ -63,6 +47,21 @@ export class UserGroupService {
                 })
                 .catch(err => err);
           }
+        }
+      })
+      .catch(err => err);
+  }
+
+  async getUserGroupsByUserId(user_id: number) {
+    const sql = `SELECT * from users_groups
+     WHERE user_id = $1;`;
+    return await pg
+      .query(sql, [user_id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows;
+        } else {
+          return false;
         }
       })
       .catch(err => err);
