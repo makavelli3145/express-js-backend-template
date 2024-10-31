@@ -20,7 +20,7 @@ export class GroupsService {
   };
 
   async getGroupsByUserId(userId: number) {
-    const sql = `Select groups.id, groups.created_by_user_id, groups.name,  users_groups.roles_permissions_id
+    const sql = `Select groups.id, groups.created_by_user_id, groups.name, groups.identification_string,  users_groups.roles_permissions_id
                    FROM users_groups
                    JOIN groups on users_groups.group_id=groups.id
                    WHERE user_id = $1;`;
