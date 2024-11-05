@@ -115,31 +115,35 @@ export class UserGroupService {
     const isAdditionalAdmin = await this.findAdditionalAdmins(group_id); // Pass groupId here
 
     if (roles_permissions_id === 2 && !isAdditionalAdmin) {
-      try {
-        // First, delete the user group entry
-        const deleteResult = await pg.query('DELETE FROM users_groups WHERE id = $1 RETURNING *', [id]);
-        if (deleteResult.rowCount === 0) return false;
-
-        // Next, update the roles_permissions_id for the user with the minimum user_id in the group
-        await pg.query(`
-        UPDATE users_groups
-        SET roles_permissions_id = 2
-        WHERE user_id = (
-          SELECT MIN(user_id) FROM users_groups WHERE group_id = $1
-        )`, [group_id]);
-
-        return deleteResult.rows[0]; // Return the deleted row data
-      } catch (err) {
-        return err;
-      }
-    } else {
-      // Just delete the user group entry without the additional update
+      const sql = `
+      DELETE FROM users_groups WHERE id = $1;
+      UPDATE users_groups
+      SET roles_permissions_id = 2
+      WHERE user_id = (
+        SELECT MIN(user_id) FROM users_groups WHERE group_id = $2 and roles_permissions_id = 4
+      );
+    `;
       return await pg
-        .query('DELETE FROM users_groups WHERE id = $1 RETURNING *', [id])
-        .then(result => (result.rowCount > 0 ? result.rows[0] : false))
-        .catch(err => err);
+        .query(sql, [id, group_id]) // Provide both id and group_id parameters
+        .then(result => {
+          return result.rowCount > 0 ? result.rows[0] : false;
+        })
+        .catch(err => {
+          return err;
+        });
+    } else {
+      const sql = 'DELETE FROM users_groups WHERE id = $1 RETURNING *';
+      return await pg
+        .query(sql, [id])
+        .then(result => {
+          return result.rowCount > 0 ? result.rows[0] : false;
+        })
+        .catch(err => {
+          return err;
+        });
     }
   };
+
 
   public joinUserGroup = async (joinUserGroup: JoinUserGroup) => {
     const { user_id, identification_string } = joinUserGroup;
