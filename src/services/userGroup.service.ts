@@ -97,50 +97,54 @@ export class UserGroupService {
       .catch(err => err);
   };
 
-  private findAdditionalAdmins = async (groupId: number): Promise<boolean | NodeJS.ErrnoException> => {
-    const sql = 'SELECT user_id FROM users_groups WHERE group_id = $1 AND roles_permissions_id = 2;';
-    return await pg
-      .query(sql, [groupId])
-      .then(result => {
-        return result.rows.length > 1;
-      })
-      .catch(err => {
-        return err;
-      });
-  }
-
   public deleteUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
     const { user_id, group_id, roles_permissions_id, id } = reqUserGroup;
 
-    const isAdditionalAdmin = await this.findAdditionalAdmins(group_id); // Pass groupId here
+    if (roles_permissions_id === 2) {
+      try {
+        await pg.query(
+          `DELETE FROM users_groups WHERE id = $1`,
+          [id]
+        ).then((result)=>{
+          console.log("userGroup succesfully deleted: ", result.rows)
+        });
 
-    if (roles_permissions_id === 2 && !isAdditionalAdmin) {
-      const sql = `
-      DELETE FROM users_groups WHERE id = $1;
-      UPDATE users_groups
-      SET roles_permissions_id = 2
-      WHERE user_id = (
-        SELECT MIN(user_id) FROM users_groups WHERE group_id = $2 and roles_permissions_id = 4
-      );
-    `;
-      return await pg
-        .query(sql, [id, group_id]) // Provide both id and group_id parameters
-        .then(result => {
-          return result.rowCount > 0 ? result.rows[0] : false;
-        })
-        .catch(err => {
-          return err;
+        await pg.query(
+          `UPDATE users_groups
+         SET roles_permissions_id = 2
+         WHERE EXISTS (
+           SELECT MIN(user_id) FROM users_groups WHERE group_id = $1 AND roles_permissions_id = 4
+         )`,
+          [group_id]
+        ).then((result)=>{
+          console.log("userGroup succesfully updated: ", result.rows)
         });
+
+        const deleteGroupResult = await pg.query(
+          `DELETE FROM groups WHERE NOT EXISTS (
+           SELECT 1 FROM users_groups WHERE users_groups.group_id = $1 AND users_groups.roles_permissions_id != 3
+         )`,
+          [group_id]
+        ).then((result)=>{
+          console.log("Empty Group succesfully deleted: ", result.rows)
+          return deleteGroupResult.rowCount > 0 ? deleteGroupResult.rows[0] : false;
+        });
+
+      } catch (err) {
+        return err;
+      }
     } else {
-      const sql = 'DELETE FROM users_groups WHERE id = $1 RETURNING *';
-      return await pg
-        .query(sql, [id])
-        .then(result => {
-          return result.rowCount > 0 ? result.rows[0] : false;
-        })
-        .catch(err => {
-          return err;
-        });
+      try {
+        const deleteGroupResult = await pg.query(
+          `DELETE FROM groups WHERE NOT EXISTS (
+           SELECT 1 FROM users_groups WHERE users_groups.group_id = $1 AND users_groups.roles_permission_id != 3
+         )`,
+          [group_id]
+        );
+        return deleteGroupResult.rowCount > 0 ? deleteGroupResult.rows[0] : false;
+      } catch (err) {
+        return err;
+      }
     }
   };
 
