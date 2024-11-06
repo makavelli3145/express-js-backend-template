@@ -102,11 +102,12 @@ export class UserGroupService {
 
     if (roles_permissions_id === 2) {
       try {
+        let deletedUserGroupResult: UserGroup;
         await pg.query(
           `DELETE FROM users_groups WHERE id = $1 RETURNING *`,
           [id]
         ).then((result)=>{
-          console.log("userGroup succesfully deleted: ", result.rows)
+          deletedUserGroupResult = result.rows[0]
         });
 
         await pg.query(
@@ -115,35 +116,26 @@ export class UserGroupService {
          WHERE roles_permissions_id = 4 and EXISTS (
            SELECT MIN(user_id) FROM users_groups WHERE group_id = $1 AND roles_permissions_id = 4)`,
           [group_id]
-        ).then((result)=>{
-          console.log("userGroup succesfully updated: ", result.rows)
-        });
+        )
 
-        const deleteGroupResult = await pg.query(
+        await pg.query(
           `DELETE FROM groups WHERE id = $1 AND NOT EXISTS (
            SELECT 1 FROM users_groups WHERE users_groups.group_id = $1 AND users_groups.roles_permissions_id != 3
          )  RETURNING *`,
           [group_id]
-        ).then((result)=>{
-          console.log("Empty Group succesfully deleted: ", result.rows)
-          return deleteGroupResult.rowCount > 0 ? deleteGroupResult.rows[0] : false;
-        });
+        )
+
+        return deletedUserGroupResult;
 
       } catch (err) {
         return err;
       }
     } else {
-      try {
-        const deleteGroupResult = await pg.query(
-          `DELETE FROM groups WHERE id = $1 AND NOT EXISTS (
-            SELECT 1 FROM users_groups WHERE users_groups.group_id = $1 AND users_groups.roles_permissions_id != 3
-          )  RETURNING *`,
-          [group_id]
-        );
-        return deleteGroupResult.rowCount > 0 ? deleteGroupResult.rows[0] : false;
-      } catch (err) {
-        return err;
-      }
+      // Just delete the user group entry without the additional update
+      return await pg
+        .query('DELETE FROM users_groups WHERE id = $1 RETURNING *', [id])
+        .then(result => (result.rowCount > 0 ? result.rows[0] : false))
+        .catch(err => err);
     }
   };
 
