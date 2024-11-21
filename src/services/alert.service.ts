@@ -51,7 +51,7 @@ export class AlertService {
       .catch(err => err);
   }
 
-  async getAlertByUserAndGroupId(userId: number, groupId: number):Promise<Group | boolean | NodeJS.ErrnoException>  {
+  async getAlertByUserId(userId: number, groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
     // const sql = 'SELECT\n' +
     //   '  alerts.id AS alert_id,\n' +
     //   '  alerts.time AS alert_time,\n' +
@@ -61,16 +61,17 @@ export class AlertService {
     //   '  alerts\n' +
     //   '  LEFT JOIN push_notifications ON alerts.push_notifications_id = push_notifications.id;';
     //
-    console.log("Dynamic URL works")
-    return false;
-  }
 
-  async getAlertByUserId(userId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
     console.log("Dynamic URL works")
     return false;
   }
 
   async getAlertByGroupId(groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
+    console.log("Dynamic URL works")
+    return false;
+  }
+
+  async getAllAlerts(user_id: number) {
     console.log("Dynamic URL works")
     return false;
   }

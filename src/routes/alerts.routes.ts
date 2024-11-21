@@ -21,6 +21,6 @@ export class AlertRoute implements Routes {
     this.router.post('/alerts/create', AuthMiddleware, ValidationMiddleware(CreateAlertDto), this.Alert.createAlert);
     this.router.put('/alerts/update', AuthMiddleware, ValidationMiddleware(UpdateAlertDto), this.Alert.updateAlert);
     this.router.delete('/alerts/delete', AuthMiddleware, ValidationMiddleware(DeleteAlertDto), this.Alert.deleteAlert);
-    this.router.get('/alerts/:filterBy', AuthMiddleware, this.Alert.getAlertByUserAndGroupId);
+    this.router.get('/alerts/:filterBy', AuthMiddleware, this.Alert.getAlerts);
   }
 }

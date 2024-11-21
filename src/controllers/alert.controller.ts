@@ -49,27 +49,8 @@ export class AlertController {
             next(error);
         }
     };
-    public getAlertByUserId = (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = Number(req.query.id);
-            this.alertService.getAlertByUserId(userId).then(result => {
-                if (result) {
-                    res.status(200).json(result);
-                } else {
-                    res.status(500).send('server unable to get alerts by groupId');
-                }
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
 
-    const;
-    checkAlertParams = (params: any) => {
-        const validParams = ['all', 'userId', 'groupId'];
-        return validParams.includes(params);
-    };
-    public getAlertByUserAndGroupId = (req: Request, res: Response, next: NextFunction) => {
+    public getAlerts = (req: Request, res: Response, next: NextFunction) => {
         const filterBy = req.params.filterBy;
         switch (filterBy) {
             case 'userId':
@@ -77,7 +58,7 @@ export class AlertController {
                     const groupId = parseInt(req.params.groupId);
                     const userId = parseInt(req.params.userId);
                     if (userId && groupId) {
-                        this.alertService.getAlertByUserId(userId).then(result => {
+                        this.alertService.getAlertByUserId(userId, groupId).then(result => {
                             if (result) {
                                 res.status(200).json(result);
                             } else {
@@ -111,14 +92,15 @@ export class AlertController {
                 break;
             case 'all':
                 try {
-                    this.alertService.getAllAlerts().then(result => {
+                  const user_id = req.session.userId;
+                  this.alertService.getAllAlerts(user_id).then(result => {
                         if (result) {
                             res.status(200).json(result);
                         } else {
                             res.status(500).send('server unable to get alerts by userId and groupId');
                         }
                     });
-                } catch (error) {
+                }catch (error) {
                     next(error);
                 }
                 break;
