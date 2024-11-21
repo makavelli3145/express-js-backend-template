@@ -54,9 +54,10 @@ export class AlertService {
 
   async getAlertByUserId(userId: number, groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
     const sql = `SELECT alerts.* FROM alerts
-               JOIN devices ON  device.id = alerts.trigerring_device_id
-               JOIN users ON  users.id = devices.user_id
-               WHERE devices.user_id = $1 and groups.id = $2 ;`;
+               JOIN devices ON devices.id = alerts.triggering_device_id
+               JOIN users ON users.id = devices.user_id
+               JOIN users_groups ON users_groups.id = devices.user_id
+               WHERE devices.user_id = $1 and users_groups.group_id = $2 ;`;
 
 
     return await pg
