@@ -50,4 +50,28 @@ export class AlertService {
       })
       .catch(err => err);
   }
+
+  async getAlertByUserAndGroupId(userId: number, groupId: number):Promise<Group | boolean | NodeJS.ErrnoException>  {
+    // const sql = 'SELECT\n' +
+    //   '  alerts.id AS alert_id,\n' +
+    //   '  alerts.time AS alert_time,\n' +
+    //   '  push_notifications.id AS notification_id,\n' +
+    //   '  push_notifications.message AS notification_message\n' +
+    //   'FROM\n' +
+    //   '  alerts\n' +
+    //   '  LEFT JOIN push_notifications ON alerts.push_notifications_id = push_notifications.id;';
+    //
+    console.log("Dynamic URL works")
+    return false;
+  }
+
+  async getAlertByUserId(userId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
+    console.log("Dynamic URL works")
+    return false;
+  }
+
+  async getAlertByGroupId(groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
+    console.log("Dynamic URL works")
+    return false;
+  }
 }

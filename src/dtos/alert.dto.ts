@@ -22,5 +22,3 @@ export class UpdateAlertDto extends CreateAlertDto {
 }
 
 export class DeleteAlertDto extends UpdateAlertDto {}
-
-export class GetAlertDto extends UpdateAlertDto {}

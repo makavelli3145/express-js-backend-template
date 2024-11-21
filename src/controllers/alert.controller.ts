@@ -49,4 +49,83 @@ export class AlertController {
       next(error);
     }
   };
+  public getAlertByUserId = (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = Number(req.query.id);
+      this.alertService.getAlertByUserId(userId).then(result => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res.status(500).send('server unable to get alerts by groupId');
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  const
+  checkAlertParams = (params: any) => {
+    const validParams = ["all", "userId", "groupId"];
+    return validParams.includes(params);
+  };
+  public getAlertByUserAndGroupId = (req: Request, res: Response, next: NextFunction) => {
+
+    const isValidParams = this.checkAlertParams(req.params.filterBy);
+    console.log("isValidParams: ", isValidParams)
+
+    if (isValidParams) {
+      const urlParams = req.params.filterBy
+      switch (urlParams) {
+        default:
+          res.status(500).send("There is an issue with getting alerts")
+
+        case "userId":
+          try {
+            const userId = Number(req.params.userId);
+            this.alertService.getAlertByUserId(userId).then(result => {
+              if (result) {
+                res.status(200).json(result);
+              } else {
+                res.status(500).send('server unable to get alerts by userId and groupId');
+              }
+            });
+          }catch(error){
+              next(error);
+          }
+
+        case "groupId":
+          try {
+            const groupId = Number(req.params.groupId);
+
+            this.alertService.getAlertByGroupId(groupId).then(result => {
+              if (result) {
+                res.status(200).json(result);
+              } else {
+                res.status(500).send('server unable to get alerts by userId and groupId');
+              }
+            });
+          } catch(error){
+              next(error);
+          }
+        case "all":
+          try {
+            const userId = Number(req.params.userId);
+            const groupId = Number(req.params.groupId);
+
+            this.alertService.getAlertByUserAndGroupId(userId, groupId).then(result => {
+              if (result) {
+                res.status(200).json(result);
+              } else {
+                res.status(500).send('server unable to get alerts by userId and groupId');
+              }
+            });
+          } catch(error){
+              next(error);
+          }
+        }
+      }else {
+      res.status(500).send("Invalid url parameters")
+    }
+  }
 }
