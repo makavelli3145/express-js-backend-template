@@ -2,14 +2,15 @@ import { Service } from 'typedi';
 import pg from '@database';
 import { Group } from '@interfaces/group.interface';
 import { Alert } from '@interfaces/alert.interface';
+import {CreateAlertDto} from "@dtos/alert.dto";
 
 @Service()
 export class AlertService {
-  public createAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { triggering_device_id, location, push_notification_id, id } = alert;
-    const sql = `INSERT INTO groups (triggering_device_id, location, push_notification_id, id) VALUES ( $1, $2, $3, $4) RETURNING *`;
+  public createAlert = async (alert: CreateAlertDto): Promise<Group | boolean | NodeJS.ErrnoException> => {
+    const { device_uuid, location } = alert;
+    const sql = `INSERT INTO alerts (triggering_device_id, location) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2) RETURNING *;`;
     return await pg
-      .query(sql, [triggering_device_id, location, push_notification_id, id])
+      .query(sql, [device_uuid, location])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
@@ -51,27 +52,62 @@ export class AlertService {
       .catch(err => err);
   }
 
-  async getAlertByUserAndGroupId(userId: number, groupId: number):Promise<Group | boolean | NodeJS.ErrnoException>  {
-    // const sql = 'SELECT\n' +
-    //   '  alerts.id AS alert_id,\n' +
-    //   '  alerts.time AS alert_time,\n' +
-    //   '  push_notifications.id AS notification_id,\n' +
-    //   '  push_notifications.message AS notification_message\n' +
-    //   'FROM\n' +
-    //   '  alerts\n' +
-    //   '  LEFT JOIN push_notifications ON alerts.push_notifications_id = push_notifications.id;';
-    //
-    console.log("Dynamic URL works")
-    return false;
-  }
+  async getAlertByUserId(userId: number, groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
+    const sql = `SELECT alerts.* FROM alerts
+               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
+               JOIN users ON users.id = devices.user_id
+               JOIN users_groups ON users_groups.user_id = devices.user_id
+               WHERE devices.user_id = $1 and users_groups.group_id = $2 ;`;
 
-  async getAlertByUserId(userId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
-    console.log("Dynamic URL works")
-    return false;
+
+    return await pg
+      .query(sql, [userId, groupId])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
   }
 
   async getAlertByGroupId(groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
-    console.log("Dynamic URL works")
-    return false;
+    const sql = `SELECT alerts.* FROM alerts
+               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
+               JOIN users ON users.id = devices.user_id
+               JOIN users_groups ON users_groups.group_id = groups.id
+               WHERE groups.id = $1 ;`;
+
+
+    return await pg
+      .query(sql, [groupId])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
+  }
+
+  async getAllAlerts(user_id: number) {
+    const sql = `SELECT alerts.* FROM alerts
+               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
+               JOIN users ON users.id = devices.user_id
+               WHERE users.id = $1 ;`;
+
+
+    return await pg
+      .query(sql, [user_id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
   }
 }

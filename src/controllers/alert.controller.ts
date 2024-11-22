@@ -49,35 +49,19 @@ export class AlertController {
             next(error);
         }
     };
-    public getAlertByUserId = (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = Number(req.query.id);
-            this.alertService.getAlertByUserId(userId).then(result => {
-                if (result) {
-                    res.status(200).json(result);
-                } else {
-                    res.status(500).send('server unable to get alerts by groupId');
-                }
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
 
-    const;
-    checkAlertParams = (params: any) => {
-        const validParams = ['all', 'userId', 'groupId'];
-        return validParams.includes(params);
-    };
-    public getAlertByUserAndGroupId = (req: Request, res: Response, next: NextFunction) => {
+    public getAlerts = (req: Request, res: Response, next: NextFunction) => {
         const filterBy = req.params.filterBy;
+        console.log("request: ", req.params)
         switch (filterBy) {
             case 'userId':
                 try {
-                    const groupId = parseInt(req.params.groupId);
-                    const userId = parseInt(req.params.userId);
+                  console.log("req.query.groupId: ", req.query.groupId, " req.query.userId: ", req.query.userId)
+                    const groupId = parseInt(req.query.groupId);
+                    const userId = parseInt(req.query.userId);
                     if (userId && groupId) {
-                        this.alertService.getAlertByUserId(userId).then(result => {
+                      console.log("userId && groupId is valid, request: ", req.params)
+                      this.alertService.getAlertByUserId(userId, groupId).then(result => {
                             if (result) {
                                 res.status(200).json(result);
                             } else {
@@ -85,7 +69,7 @@ export class AlertController {
                             }
                         });
                     } else {
-                        res.status(501).send('invalid request, query string is missing group ID value or user ID value');
+                        res.status(501).send('could not getAlertByUserId');
                     }
                 } catch (error) {
                     next(error);
@@ -111,14 +95,15 @@ export class AlertController {
                 break;
             case 'all':
                 try {
-                    this.alertService.getAllAlerts().then(result => {
+                  const user_id = req.session.userId;
+                  this.alertService.getAllAlerts(user_id).then(result => {
                         if (result) {
                             res.status(200).json(result);
                         } else {
                             res.status(500).send('server unable to get alerts by userId and groupId');
                         }
                     });
-                } catch (error) {
+                }catch (error) {
                     next(error);
                 }
                 break;
