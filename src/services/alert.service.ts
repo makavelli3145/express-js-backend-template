@@ -54,9 +54,9 @@ export class AlertService {
 
   async getAlertByUserId(userId: number, groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
     const sql = `SELECT alerts.* FROM alerts
-               JOIN devices ON devices.id = alerts.triggering_device_id
+               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
                JOIN users ON users.id = devices.user_id
-               JOIN users_groups ON users_groups.id = devices.user_id
+               JOIN users_groups ON users_groups.user_id = devices.user_id
                WHERE devices.user_id = $1 and users_groups.group_id = $2 ;`;
 
 
@@ -73,22 +73,41 @@ export class AlertService {
   }
 
   async getAlertByGroupId(groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
-    // const sql = 'SELECT\n' +
-    //   '  alerts.id AS alert_id,\n' +
-    //   '  alerts.time AS alert_time,\n' +
-    //   '  push_notifications.id AS notification_id,\n' +
-    //   '  push_notifications.message AS notification_message\n' +
-    //   'FROM\n' +
-    //   '  alerts\n' +
-    //   '  LEFT JOIN push_notifications ON alerts.push_notifications_id = push_notifications.id;';
-    //
+    const sql = `SELECT alerts.* FROM alerts
+               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
+               JOIN users ON users.id = devices.user_id
+               JOIN users_groups ON users_groups.group_id = groups.id
+               WHERE groups.id = $1 ;`;
 
-    console.log("Dynamic URL works")
-    return false;
+
+    return await pg
+      .query(sql, [groupId])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
   }
 
   async getAllAlerts(user_id: number) {
-    console.log("Dynamic URL works")
-    return false;
+    const sql = `SELECT alerts.* FROM alerts
+               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
+               JOIN users ON users.id = devices.user_id
+               WHERE users.id = $1 ;`;
+
+
+    return await pg
+      .query(sql, [user_id])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        } else {
+          return false;
+        }
+      })
+      .catch(err => err);
   }
 }
