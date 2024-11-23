@@ -52,11 +52,9 @@ export class AlertController {
 
     public getAlerts = (req: Request, res: Response, next: NextFunction) => {
         const filterBy = req.params.filterBy;
-        console.log("request: ", req.params)
         switch (filterBy) {
             case 'userId':
                 try {
-                  console.log("req.query.groupId: ", req.query.groupId, " req.query.userId: ", req.query.userId)
                     const groupId = parseInt(req.query.groupId);
                     const userId = parseInt(req.query.userId);
                     if (userId && groupId) {
@@ -77,7 +75,7 @@ export class AlertController {
                 break;
             case 'groupId':
                 try {
-                    const groupId = parseInt(req.params.groupId);
+                    const groupId = parseInt(req.query.groupId);
                     if (groupId) {
                         this.alertService.getAlertByGroupId(groupId).then(result => {
                             if (result) {

@@ -64,7 +64,7 @@ export class AlertService {
       .query(sql, [userId, groupId])
       .then(result => {
         if (result.rowCount > 0) {
-          return result.rows[0];
+          return result.rows;
         } else {
           return false;
         }
@@ -74,17 +74,18 @@ export class AlertService {
 
   async getAlertByGroupId(groupId: number):Promise<Group | boolean | NodeJS.ErrnoException> {
     const sql = `SELECT alerts.* FROM alerts
-               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
-               JOIN users ON users.id = devices.user_id
-               JOIN users_groups ON users_groups.group_id = groups.id
-               WHERE groups.id = $1 ;`;
+                  JOIN devices ON devices.id = alerts.triggering_device_id
+                  JOIN users ON users.id = devices.user_id
+                  JOIN users_groups ON users_groups.user_id = users.id
+                  JOIN groups ON groups.id = users_groups.group_id
+                 WHERE groups.id = $1;`;
 
 
     return await pg
       .query(sql, [groupId])
       .then(result => {
         if (result.rowCount > 0) {
-          return result.rows[0];
+          return result.rows;
         } else {
           return false;
         }
@@ -103,7 +104,7 @@ export class AlertService {
       .query(sql, [user_id])
       .then(result => {
         if (result.rowCount > 0) {
-          return result.rows[0];
+          return result.rows;
         } else {
           return false;
         }
