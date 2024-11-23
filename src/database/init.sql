@@ -176,7 +176,9 @@ CREATE TABLE public.alerts (
     triggering_device_id integer,
     "time" integer,
     location integer,
-    id integer NOT NULL
+    id integer NOT NULL,
+    status text,
+    message text
 );
 
 
