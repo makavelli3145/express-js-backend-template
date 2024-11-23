@@ -63,11 +63,7 @@ export class AlertService {
     return await pg
       .query(sql, [userId, groupId])
       .then(result => {
-        if (result.rowCount > 0) {
           return result.rows;
-        } else {
-          return false;
-        }
       })
       .catch(err => err);
   }
@@ -84,11 +80,7 @@ export class AlertService {
     return await pg
       .query(sql, [groupId])
       .then(result => {
-        if (result.rowCount > 0) {
           return result.rows;
-        } else {
-          return false;
-        }
       })
       .catch(err => err);
   }
@@ -103,11 +95,7 @@ export class AlertService {
     return await pg
       .query(sql, [user_id])
       .then(result => {
-        if (result.rowCount > 0) {
           return result.rows;
-        } else {
-          return false;
-        }
       })
       .catch(err => err);
   }
