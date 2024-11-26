@@ -86,9 +86,10 @@ export class AlertService {
 
   async getAllAlerts(user_id: number) {
     const sql = `SELECT alerts.* FROM alerts
-               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
-               JOIN users ON users.id = devices.user_id
-               WHERE users.id = $1 ;`;
+                                          LEFT JOIN devices ON devices.id = alerts.triggering_device_id
+                                          JOIN users ON users.id = devices.user_id
+                                          JOIN users_groups ON users_groups.user_id = users.id
+                                          WHERE users_groups.group_id IN (SELECT group_id FROM users_groups WHERE user_id = $1);`;
 
 
     return await pg
