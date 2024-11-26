@@ -58,7 +58,6 @@ export class AlertController {
                     const groupId = parseInt(req.query.groupId);
                     const userId = parseInt(req.query.userId);
                     if (userId && groupId) {
-                      console.log("userId && groupId is valid, request: ", req.params)
                       this.alertService.getAlertByUserId(userId, groupId).then(result => {
                             if (result) {
                                 res.status(200).json(result);
@@ -67,7 +66,7 @@ export class AlertController {
                             }
                         });
                     } else {
-                        res.status(501).send('could not getAlertByUserId');
+                        res.status(501).send('invalid query string, bad request');
                     }
                 } catch (error) {
                     next(error);
@@ -81,7 +80,7 @@ export class AlertController {
                             if (result) {
                                 res.status(200).json(result);
                             } else {
-                                res.status(500).send('server unable to get alerts by userId and groupId');
+                                res.status(500).send('server unable to get alerts by groupId');
                             }
                         });
                     } else {
@@ -98,7 +97,7 @@ export class AlertController {
                         if (result) {
                             res.status(200).json(result);
                         } else {
-                            res.status(500).send('server unable to get alerts by userId and groupId');
+                            res.status(500).send('server cannot get alerts for the current user');
                         }
                     });
                 }catch (error) {
@@ -106,7 +105,7 @@ export class AlertController {
                 }
                 break;
             default:
-                res.status(500).send('There is an issue with getting alerts');
+                res.status(500).send('Invalid filter by url param');
         }
     };
 }
