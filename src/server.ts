@@ -14,7 +14,7 @@ const cronJobs = initCronJobs.initializeJobs();
 const app = new App([new AuthRoute(), new GroupRoute(), new UserGroupRoute()], cronJobs);
 
 try {
-  app.listen();
+    app.listen();
 } catch (e) {
-  console.error(e);
+    console.error(e);
 }

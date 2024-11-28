@@ -5,8 +5,9 @@ import { JoinUserGroup, UserGroup } from '@interfaces/userGroup.interface';
 
 @Service()
 export class UserGroupService {
+
   async getUserGroupsByGroupId(groupId: number, user_id: number) {
-    let sql = `SELECT  users_groups.roles_permissions_id FROM users_groups WHERE user_id = $1 and group_id = $2;`;
+    let sql = `SELECT users_groups.roles_permissions_id FROM users_groups WHERE user_id = $1 and group_id = $2;`;
     return await pg
       .query(sql, [user_id, groupId])
       .then(async result => {
@@ -33,8 +34,8 @@ export class UserGroupService {
             case 4:
               sql = `SELECT users_groups.*, users.name
                FROM users_groups
-               JOIN users ON users_groups.user_id = users.id
-               WHERE users_groups.group_id = $1 and users_groups.roles_permissions_id  = 2 OR  users_groups.roles_permissions_id = 4;`;
+               JOIN users ON  users.id = users_groups.user_id
+               WHERE users_groups.group_id = $1 and (users_groups.roles_permissions_id  = 2 OR  users_groups.roles_permissions_id = 4);`;
               return await pg
                 .query(sql, [groupId])
                 .then(result => {
@@ -83,7 +84,7 @@ export class UserGroupService {
 
   public updateUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
     const { user_id, group_id, roles_permissions_id } = reqUserGroup;
-    const sql: string = 'UPDATE users_groups SET user_id=$1, roles_permissions_id=$2 WHERE group_id=$3 RETURNING *';
+    const sql: string = 'UPDATE users_groups SET roles_permissions_id=$2 WHERE user_id=$1 and group_id=$3 RETURNING *';
     return await pg
       .query(sql, [user_id, roles_permissions_id, group_id])
       .then(result => {
