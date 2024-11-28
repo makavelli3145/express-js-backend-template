@@ -5,7 +5,6 @@ import { JoinUserGroup, UserGroup } from '@interfaces/userGroup.interface';
 
 @Service()
 export class UserGroupService {
-
   async getUserGroupsByGroupId(groupId: number, user_id: number) {
     let sql = `SELECT  users_groups.roles_permissions_id FROM users_groups WHERE user_id = $1 and group_id = $2;`;
     return await pg
@@ -99,21 +98,41 @@ export class UserGroupService {
 
   public deleteUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
     const { user_id, group_id, roles_permissions_id, id } = reqUserGroup;
-    const sql: string = 'DELETE FROM users_groups WHERE id=$1 RETURNING *';
-    return await pg
-      .query(sql, [id])
-      .then(result => {
-        if (result.rowCount > 0) {
-          return result.rows[0];
-        } else {
-          return false;
-        }
-      })
-      .catch(err => {
-        return err;
-      });
-  };
 
+    if (roles_permissions_id === 2) {
+      try {
+        let deletedUserGroupResult: UserGroup;
+        await pg.query(`DELETE FROM users_groups WHERE id = $1 RETURNING *`, [id]).then(result => {
+          deletedUserGroupResult = result.rows[0];
+        });
+
+        await pg.query(
+          `UPDATE users_groups
+         SET roles_permissions_id = 2
+         WHERE roles_permissions_id = 4 and EXISTS (
+           SELECT MIN(user_id) FROM users_groups WHERE group_id = $1 AND roles_permissions_id = 4)`,
+          [group_id],
+        );
+
+        await pg.query(
+          `DELETE FROM groups WHERE id = $1 AND NOT EXISTS (
+           SELECT 1 FROM users_groups WHERE users_groups.group_id = $1 AND users_groups.roles_permissions_id != 3
+         )  RETURNING *`,
+          [group_id],
+        );
+
+        return deletedUserGroupResult;
+      } catch (err) {
+        return err;
+      }
+    } else {
+      // Just delete the user group entry without the additional update
+      return await pg
+        .query('DELETE FROM users_groups WHERE id = $1 RETURNING *', [id])
+        .then(result => (result.rowCount > 0 ? result.rows[0] : false))
+        .catch(err => err);
+    }
+  };
 
   public joinUserGroup = async (joinUserGroup: JoinUserGroup) => {
     const { user_id, identification_string } = joinUserGroup;
