@@ -4,7 +4,6 @@ import { ValidateEnv } from '@utils/validateEnv';
 import { GroupRoute } from '@routes/groups.routes';
 import { UserGroupRoute } from '@routes/userGroup.routes';
 import { InitCronJobs } from '@/cron/index.cron';
-import { AlertRoute } from '@routes/alerts.routes';
 
 ValidateEnv();
 
@@ -12,10 +11,10 @@ const initCronJobs = new InitCronJobs();
 
 const cronJobs = initCronJobs.initializeJobs();
 
-const app = new App([new AuthRoute(), new GroupRoute(), new UserGroupRoute(), new AlertRoute()], cronJobs);
+const app = new App([new AuthRoute(), new GroupRoute(), new UserGroupRoute()], cronJobs);
 
 try {
-  app.listen();
+    app.listen();
 } catch (e) {
-  console.error(e);
+    console.error(e);
 }
