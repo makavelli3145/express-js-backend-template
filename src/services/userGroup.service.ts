@@ -65,7 +65,6 @@ export class UserGroupService {
       })
       .catch(err => err);
   }
-
   public createUserGroup = async (reqUserGroup: UserGroup): Promise<UserGroup | boolean | NodeJS.ErrnoException> => {
     const { user_id, group_id, roles_permissions_id } = reqUserGroup;
     const sql = `
