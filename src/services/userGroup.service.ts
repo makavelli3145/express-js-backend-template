@@ -114,7 +114,6 @@ export class UserGroupService {
       });
   };
 
-
   public joinUserGroup = async (joinUserGroup: JoinUserGroup) => {
     const { user_id, identification_string } = joinUserGroup;
     let sql = `SELECT id FROM groups WHERE identification_string = $1`;
