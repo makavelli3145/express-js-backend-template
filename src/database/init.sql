@@ -33,33 +33,6 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
--- Name: alert_insert(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION public.alert_insert() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    INSERT INTO push_notifications (data, title, body, push_notification_type_id, alert_id)
-    VALUES (
-        NULL,
-        'Alert triggered',
-        'An alert was triggered by ' ||
-        COALESCE((SELECT name FROM users
-                  WHERE id = (SELECT user_id FROM devices
-                              WHERE id = NEW.triggering_device_id)), 'Unknown User') ||
-        ' at ' || COALESCE(NEW.time::TEXT, 'Unknown Time'),
-        1,
-        NEW.id
-    );
-    RETURN NEW;
-END;
-$$;
-
-
-ALTER FUNCTION public.alert_insert() OWNER TO postgres;
-
---
 -- Name: create_user_groups_entry_for_admin(integer, integer); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -84,47 +57,6 @@ $$;
 
 
 ALTER PROCEDURE public.create_user_groups_entry_for_admin(IN _group_id integer, IN _user_id integer) OWNER TO postgres;
-
---
--- Name: push_notification_insert(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION public.push_notification_insert() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    INSERT INTO push_notification_jobs (push_id, completed, pending, failed, retry_attempt)
-    VALUES (NEW.id, false, true, false,  0 );
-
-    RETURN NEW;
-END;
-$$;
-
-
-ALTER FUNCTION public.push_notification_insert() OWNER TO postgres;
-
---
--- Name: push_notification_job_insert(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION public.push_notification_job_insert() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    INSERT INTO push_notifications_users_groups (push_notification_jobs_id, users_groups_id)
-    SELECT NEW.id, ug.id
-    FROM users_groups ug
-    JOIN devices d ON ug.user_id = d.user_id
-    JOIN alerts a ON d.id = a.triggering_device_id
-    JOIN push_notifications pn ON a.id = pn.alert_id
-    WHERE pn.id = NEW.push_id;
-
-    RETURN NEW;
-END;
-$$;
-
-
-ALTER FUNCTION public.push_notification_job_insert() OWNER TO postgres;
 
 --
 -- Name: trigger_on_insert_create_user_groups_entry_for_admin(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -167,44 +99,6 @@ ALTER FUNCTION public.update_completed_at() OWNER TO postgres;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
-
---
--- Name: alerts; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.alerts (
-    triggering_device_id integer,
-    "time" integer,
-    location integer,
-    id integer NOT NULL,
-    status text,
-    message text
-);
-
-
-ALTER TABLE public.alerts OWNER TO postgres;
-
---
--- Name: alerts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.alerts_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.alerts_id_seq OWNER TO postgres;
-
---
--- Name: alerts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.alerts_id_seq OWNED BY public.alerts.id;
-
 
 --
 -- Name: devices; Type: TABLE; Schema: public; Owner: postgres
@@ -399,11 +293,11 @@ ALTER SEQUENCE public.push_notification_type_id_seq OWNED BY public.push_notific
 
 CREATE TABLE public.push_notifications (
     id integer NOT NULL,
+    to_device_id integer NOT NULL,
     data text,
     title text,
     body text,
-    push_notification_type_id integer NOT NULL,
-    alert_id integer
+    push_notification_type_id integer NOT NULL
 );
 
 
@@ -429,41 +323,6 @@ ALTER SEQUENCE public.push_notifications_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.push_notifications_id_seq OWNED BY public.push_notifications.id;
-
-
---
--- Name: push_notifications_users_groups; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.push_notifications_users_groups (
-    id integer NOT NULL,
-    push_notification_jobs_id integer NOT NULL,
-    users_groups_id integer NOT NULL
-);
-
-
-ALTER TABLE public.push_notifications_users_groups OWNER TO postgres;
-
---
--- Name: push_notifications_users_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.push_notifications_users_groups_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.push_notifications_users_groups_id_seq OWNER TO postgres;
-
---
--- Name: push_notifications_users_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.push_notifications_users_groups_id_seq OWNED BY public.push_notifications_users_groups.id;
 
 
 --
@@ -611,13 +470,6 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: alerts id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.alerts ALTER COLUMN id SET DEFAULT nextval('public.alerts_id_seq'::regclass);
-
-
---
 -- Name: devices id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -660,13 +512,6 @@ ALTER TABLE ONLY public.push_notifications ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- Name: push_notifications_users_groups id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.push_notifications_users_groups ALTER COLUMN id SET DEFAULT nextval('public.push_notifications_users_groups_id_seq'::regclass);
-
-
---
 -- Name: roles id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -695,12 +540,6 @@ ALTER TABLE ONLY public.users_groups ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- Data for Name: alerts; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
 -- Data for Name: devices; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -718,7 +557,7 @@ INSERT INTO public.devices VALUES (9, '06df387f-ead4-4014-8bfb-746422147536', 3,
 INSERT INTO public.groups VALUES (2, 'test', 3, '2024-06-17 16:15:20.271736', NULL);
 INSERT INTO public.groups VALUES (3, 'test2', 5, '2024-06-17 16:20:41.127677', NULL);
 INSERT INTO public.groups VALUES (54, 'mak''s gay friends', 6, '2024-10-24 17:50:53.119149', 'XT6-YUJ-678');
-INSERT INTO public.groups VALUES (6, 'test3', 5, '2024-10-16 18:12:04.135854', 'XT6-YUJ-688');
+INSERT INTO public.groups VALUES (6, 'test3', 5, '2024-10-16 18:12:04.135854', NULL);
 
 
 --
@@ -749,13 +588,7 @@ INSERT INTO public.push_notification_type VALUES (3, 'checkin', 1200, 0, false);
 -- Data for Name: push_notifications; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.push_notifications VALUES (2, '{"body":"test"}', 'test', 'test', 1, NULL);
-
-
---
--- Data for Name: push_notifications_users_groups; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
+INSERT INTO public.push_notifications VALUES (2, 3, '{"body":"test"}', 'test', 'test', 1);
 
 
 --
@@ -791,19 +624,12 @@ INSERT INTO public.users VALUES (6, '9812055281082', 1, '9808', 'gay boy', '2024
 -- Data for Name: users_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.users_groups VALUES (3, 5, 2, '2024-06-17 16:21:19.054075', 4);
-INSERT INTO public.users_groups VALUES (6, 5, 4, '2024-10-16 18:12:04.135854', 6);
-INSERT INTO public.users_groups VALUES (54, 3, 4, '2024-10-24 17:51:53.874787', 59);
-INSERT INTO public.users_groups VALUES (54, 6, 2, '2024-10-24 17:52:11.816624', 60);
-INSERT INTO public.users_groups VALUES (6, 3, 4, '2024-10-26 10:09:50.493523', 63);
-INSERT INTO public.users_groups VALUES (2, 3, 4, '2024-06-17 16:16:13.466136', 2);
-
-
---
--- Name: alerts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.alerts_id_seq', 1, false);
+INSERT INTO public.users_groups VALUES (2, 3, 1, '2024-06-17 16:16:13.466136', 2);
+INSERT INTO public.users_groups VALUES (54, 6, 2, '2024-10-24 17:50:53.119149', 58);
+INSERT INTO public.users_groups VALUES (3, 5, 1, '2024-06-17 16:21:19.054075', 4);
+INSERT INTO public.users_groups VALUES (6, 5, 2, '2024-10-16 18:12:04.135854', 6);
+INSERT INTO public.users_groups VALUES (54, 5, 3, '2024-10-24 17:52:11.816624', 60);
+INSERT INTO public.users_groups VALUES (54, 3, 3, '2024-10-24 17:51:53.874787', 59);
 
 
 --
@@ -849,13 +675,6 @@ SELECT pg_catalog.setval('public.push_notifications_id_seq', 2, true);
 
 
 --
--- Name: push_notifications_users_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.push_notifications_users_groups_id_seq', 1, false);
-
-
---
 -- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -873,7 +692,7 @@ SELECT pg_catalog.setval('public.user_permissions_id_seq', 4, true);
 -- Name: users_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_groups_id_seq', 63, true);
+SELECT pg_catalog.setval('public.users_groups_id_seq', 60, true);
 
 
 --
@@ -881,14 +700,6 @@ SELECT pg_catalog.setval('public.users_groups_id_seq', 63, true);
 --
 
 SELECT pg_catalog.setval('public.users_id_seq', 6, true);
-
-
---
--- Name: alerts alerts_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_pk PRIMARY KEY (id);
 
 
 --
@@ -937,14 +748,6 @@ ALTER TABLE ONLY public.push_notification_type
 
 ALTER TABLE ONLY public.push_notifications
     ADD CONSTRAINT push_notifications_pk PRIMARY KEY (id);
-
-
---
--- Name: push_notifications_users_groups push_notifications_users_groups_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.push_notifications_users_groups
-    ADD CONSTRAINT push_notifications_users_groups_pk PRIMARY KEY (id);
 
 
 --
@@ -1008,27 +811,6 @@ CREATE UNIQUE INDEX users_id_number_uindex ON public.users USING btree (id_numbe
 
 
 --
--- Name: alerts after_insert_on_alert; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER after_insert_on_alert AFTER INSERT ON public.alerts FOR EACH ROW EXECUTE FUNCTION public.alert_insert();
-
-
---
--- Name: push_notification_jobs after_push_notification_insert; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER after_push_notification_insert AFTER INSERT ON public.push_notification_jobs FOR EACH ROW EXECUTE FUNCTION public.push_notification_insert();
-
-
---
--- Name: push_notification_jobs after_push_notification_job_insert; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER after_push_notification_job_insert AFTER INSERT ON public.push_notification_jobs FOR EACH ROW EXECUTE FUNCTION public.push_notification_job_insert();
-
-
---
 -- Name: groups on_insert_create_user_groups_entry_for_admin; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1040,14 +822,6 @@ CREATE TRIGGER on_insert_create_user_groups_entry_for_admin AFTER INSERT ON publ
 --
 
 CREATE TRIGGER update_completed_at_trigger BEFORE UPDATE ON public.push_notification_jobs FOR EACH ROW WHEN (((old.pending IS DISTINCT FROM new.pending) OR (old.completed IS DISTINCT FROM new.completed))) EXECUTE FUNCTION public.update_completed_at();
-
-
---
--- Name: alerts alerts_devices_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_devices_id_fk FOREIGN KEY (triggering_device_id) REFERENCES public.devices(id);
 
 
 --
@@ -1075,11 +849,11 @@ ALTER TABLE ONLY public.push_notification_jobs
 
 
 --
--- Name: push_notifications push_notifications_alerts_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: push_notifications push_notifications_devices_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.push_notifications
-    ADD CONSTRAINT push_notifications_alerts_id_fk FOREIGN KEY (alert_id) REFERENCES public.alerts(id);
+    ADD CONSTRAINT push_notifications_devices_id_fk FOREIGN KEY (to_device_id) REFERENCES public.devices(id);
 
 
 --
@@ -1088,22 +862,6 @@ ALTER TABLE ONLY public.push_notifications
 
 ALTER TABLE ONLY public.push_notifications
     ADD CONSTRAINT push_notifications_push_notification_type_id_fk FOREIGN KEY (push_notification_type_id) REFERENCES public.push_notification_type(id);
-
-
---
--- Name: push_notifications_users_groups push_notifications_users_groups_push_notification_jobs_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.push_notifications_users_groups
-    ADD CONSTRAINT push_notifications_users_groups_push_notification_jobs_id_fk FOREIGN KEY (push_notification_jobs_id) REFERENCES public.push_notification_jobs(id);
-
-
---
--- Name: push_notifications_users_groups push_notifications_users_groups_users_groups_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.push_notifications_users_groups
-    ADD CONSTRAINT push_notifications_users_groups_users_groups_id_fk FOREIGN KEY (users_groups_id) REFERENCES public.users_groups(id);
 
 
 --
