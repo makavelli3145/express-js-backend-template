@@ -85,7 +85,7 @@ export class AlertService {
     const sql = `SELECT alerts.* FROM alerts
                                         JOIN devices ON alerts.triggering_device_id = devices.id
                                         JOIN users_groups ON devices.user_id = users_groups.user_id
-                                        JOIN ( SELECT group_id FROM users_groups WHERE user_id = 6 ) g_id ON g_id.group_id = users_groups.group_id;`;
+                                        JOIN ( SELECT group_id FROM users_groups WHERE user_id = $1 ) g_id ON g_id.group_id = users_groups.group_id;`;
 
     return await pg
       .query(sql, [user_id])
