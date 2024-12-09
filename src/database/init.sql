@@ -170,8 +170,10 @@ CREATE TABLE public.alerts (
     "time" integer,
     location integer,
     id integer NOT NULL,
-    status text,
-    message text
+    status_id integer,
+    message text,
+    column_name integer,
+    type_id integer
 );
 
 
@@ -197,6 +199,74 @@ ALTER SEQUENCE public.alerts_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.alerts_id_seq OWNED BY public.alerts.id;
+
+
+--
+-- Name: alerts_status; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.alerts_status (
+    id integer NOT NULL,
+    status text NOT NULL
+);
+
+
+ALTER TABLE public.alerts_status OWNER TO postgres;
+
+--
+-- Name: alerts_status_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.alerts_status_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.alerts_status_id_seq OWNER TO postgres;
+
+--
+-- Name: alerts_status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.alerts_status_id_seq OWNED BY public.alerts_status.id;
+
+
+--
+-- Name: alerts_type; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.alerts_type (
+    id integer NOT NULL,
+    type text
+);
+
+
+ALTER TABLE public.alerts_type OWNER TO postgres;
+
+--
+-- Name: alerts_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.alerts_type_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.alerts_type_id_seq OWNER TO postgres;
+
+--
+-- Name: alerts_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.alerts_type_id_seq OWNED BY public.alerts_type.id;
 
 
 --
@@ -611,6 +681,20 @@ ALTER TABLE ONLY public.alerts ALTER COLUMN id SET DEFAULT nextval('public.alert
 
 
 --
+-- Name: alerts_status id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.alerts_status ALTER COLUMN id SET DEFAULT nextval('public.alerts_status_id_seq'::regclass);
+
+
+--
+-- Name: alerts_type id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.alerts_type ALTER COLUMN id SET DEFAULT nextval('public.alerts_type_id_seq'::regclass);
+
+
+--
 -- Name: devices id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -691,6 +775,23 @@ ALTER TABLE ONLY public.users_groups ALTER COLUMN id SET DEFAULT nextval('public
 -- Data for Name: alerts; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+
+
+--
+-- Data for Name: alerts_status; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.alerts_status VALUES (1, 'ongoing');
+INSERT INTO public.alerts_status VALUES (2, 'resolved');
+INSERT INTO public.alerts_status VALUES (3, 'cancelled');
+
+
+--
+-- Data for Name: alerts_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.alerts_type VALUES (1, 'emergency');
+INSERT INTO public.alerts_type VALUES (2, 'recurring');
 
 
 --
@@ -800,6 +901,20 @@ SELECT pg_catalog.setval('public.alerts_id_seq', 1, false);
 
 
 --
+-- Name: alerts_status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.alerts_status_id_seq', 3, true);
+
+
+--
+-- Name: alerts_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.alerts_type_id_seq', 2, true);
+
+
+--
 -- Name: devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -882,6 +997,22 @@ SELECT pg_catalog.setval('public.users_id_seq', 6, true);
 
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_pk PRIMARY KEY (id);
+
+
+--
+-- Name: alerts_status alerts_status_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.alerts_status
+    ADD CONSTRAINT alerts_status_pk PRIMARY KEY (id);
+
+
+--
+-- Name: alerts_type alerts_type_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.alerts_type
+    ADD CONSTRAINT alerts_type_pk PRIMARY KEY (id);
 
 
 --
