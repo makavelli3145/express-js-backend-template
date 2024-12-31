@@ -96,6 +96,10 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   public name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  public mode: 'login' | 'register';
 }
 
 export class DeleteUserDto {

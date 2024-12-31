@@ -18,44 +18,52 @@ export class AuthController {
       const user: User = req.body;
       this.authService.idExists(user.id_number).then(userId => {
         if (userId) {
-          if (typeof userId === 'number') {
-            const isValidPinCode = this.authService.isValidPin(userId, user.pin);
-            // If the user's ID number already exists, then:
-            // 1) check if the pin is valid and then,
-            // 2) create a new device that is is linked
-            //    to the current user
-            if (isValidPinCode) {
-              const device: Device = {
-                device_uuid: uuid(),
-                user_id: userId,
-              };
+          if (req.body.mode === 'login') {
+            if (typeof userId === 'number') {
+              const isValidPinCode = this.authService.isValidPin(userId, user.pin);
+              // If the user's ID number already exists, then:
+              // 1) check if the pin is valid and then,
+              // 2) create a new device that is is linked
+              //    to the current user
+              if (isValidPinCode) {
+                const device: Device = {
+                  device_uuid: uuid(),
+                  user_id: userId,
+                };
 
-              this.deviceService.createDevice(device).then(createdDevice => res.status(200).json(createdDevice));
-            } else {
-              res.status(401).send('Your ID or password is wrong');
+                this.deviceService.createDevice(device).then(createdDevice => res.status(200).json(createdDevice));
+              } else {
+                res.status(401).send('Your ID or password is wrong');
+              }
             }
+          } else {
+            res.status(401).send('Account already exists please login instead');
           }
         } else {
-          this.userService.createUser(user).then(createdUser => {
-            console.log(createdUser);
-            if (typeof createdUser !== 'boolean' && 'id' in createdUser && createdUser?.id !== undefined) {
-              const userId = createdUser.id;
-              const device: Device = {
-                device_uuid: uuid(),
-                user_id: userId,
-              };
-              this.deviceService.createDevice(device).then(createdDevice => {
-                console.log(createdDevice);
-                if (typeof createdDevice !== 'boolean' && 'device_uuid' in createdDevice && createdDevice?.device_uuid !== undefined) {
-                  res.status(200).json({ device: createdDevice, user: createdUser });
-                } else {
-                  res.status(401).send('device could not be registered');
-                }
-              });
-            } else {
-              res.status(401).send('user could not be registered');
-            }
-          });
+          if (req.body.mode === 'register') {
+            this.userService.createUser(user).then(createdUser => {
+              console.log(createdUser);
+              if (typeof createdUser !== 'boolean' && 'id' in createdUser && createdUser?.id !== undefined) {
+                const userId = createdUser.id;
+                const device: Device = {
+                  device_uuid: uuid(),
+                  user_id: userId,
+                };
+                this.deviceService.createDevice(device).then(createdDevice => {
+                  console.log(createdDevice);
+                  if (typeof createdDevice !== 'boolean' && 'device_uuid' in createdDevice && createdDevice?.device_uuid !== undefined) {
+                    res.status(200).json({ device: createdDevice, user: createdUser });
+                  } else {
+                    res.status(401).send('device could not be registered');
+                  }
+                });
+              } else {
+                res.status(401).send('user could not be registered');
+              }
+            });
+          } else {
+            res.status(401).send('invalid login details');
+          }
         }
       });
     } catch (error) {
