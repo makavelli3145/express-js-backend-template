@@ -21,7 +21,6 @@ export class AuthController {
           if (req.body.mode === 'login') {
             if (typeof userId === 'number') {
               const isValidPinCode = await this.authService.isValidPin(userId, user.pin);
-              console.log(isValidPinCode);
               if (isValidPinCode) {
                 const device: Device = {
                   device_uuid: uuid(),
