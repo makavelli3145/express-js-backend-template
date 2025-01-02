@@ -16,15 +16,12 @@ export class AuthController {
   public signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const user: User = req.body;
-      this.authService.idExists(user.id_number).then(userId => {
+      this.authService.idExists(user.id_number).then(async userId => {
         if (userId) {
           if (req.body.mode === 'login') {
             if (typeof userId === 'number') {
-              const isValidPinCode = this.authService.isValidPin(userId, user.pin);
-              // If the user's ID number already exists, then:
-              // 1) check if the pin is valid and then,
-              // 2) create a new device that is is linked
-              //    to the current user
+              const isValidPinCode = await this.authService.isValidPin(userId, user.pin);
+              console.log(isValidPinCode);
               if (isValidPinCode) {
                 const device: Device = {
                   device_uuid: uuid(),
