@@ -12,7 +12,7 @@ const initCronJobs = new InitCronJobs();
 
 const cronJobs = initCronJobs.initializeJobs();
 
-const app = new App([new AuthRoute(), new GroupRoute(), new UserGroupRoute(), new AlertRoute()], cronJobs);
+const app = new App([new AuthRoute(), new GroupRoute(), new UserGroupRoute(), new AlertRoute()] /*, cronJobs*/);
 
 try {
   app.listen();

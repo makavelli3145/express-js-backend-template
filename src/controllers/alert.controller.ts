@@ -94,6 +94,7 @@ export class AlertController {
         try {
           const user_id = req.session.userId;
           this.alertService.getAllAlerts(user_id).then(result => {
+            console.log(result);
             if (result) {
               res.status(200).json(result);
             } else {

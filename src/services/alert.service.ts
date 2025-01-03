@@ -6,10 +6,10 @@ import { Alert } from '@interfaces/alert.interface';
 @Service()
 export class AlertService {
   public createAlert = async (alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { device_uuid, location } = alert;
-    const sql = `INSERT INTO alerts (triggering_device_id, location) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2) RETURNING *;`;
+    const { device_uuid, location, status_id, type_id } = alert;
+    const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4) RETURNING *;`;
     return await pg
-      .query(sql, [device_uuid, location])
+      .query(sql, [device_uuid, location, status_id, type_id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
@@ -82,10 +82,22 @@ export class AlertService {
   }
 
   async getAllAlerts(user_id: number) {
-    const sql = `SELECT alerts.* FROM alerts
+    const sql = `SELECT DISTINCT alerts.id as id,
+                                 alerts.time,
+                                 alerts.location,
+                                 alerts.message,
+                                 alerts_status.status as status,
+                                 alerts_type.type as type,
+                                 u.name as user_name,
+                                 groups.name as group_name
+                                 FROM alerts
+                                        JOIN alerts_type on alerts.type_id = alerts_type.id
+                                        JOIN alerts_status on alerts.status_id = alerts_status.id
                                         JOIN devices ON alerts.triggering_device_id = devices.id
                                         JOIN users_groups ON devices.user_id = users_groups.user_id
-                                        JOIN ( SELECT group_id FROM users_groups WHERE user_id = $1 ) g_id ON g_id.group_id = users_groups.group_id;`;
+                                        JOIN users as u on users_groups.user_id = u.id
+                                        JOIN ( SELECT * FROM users_groups WHERE user_id = $1 ) g_id ON g_id.group_id = users_groups.group_id
+                                        JOIN groups on g_id.group_id = groups.id;`;
 
     return await pg
       .query(sql, [user_id])
