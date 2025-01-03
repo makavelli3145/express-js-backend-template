@@ -27,8 +27,6 @@ export class UserGroupController {
     try {
       // Extracting user id from URL parameters and convert userId to number
       const requestUserId = Number(req.query.id);
-      console.log('fuck', req.query, req.params);
-      // const user_id = req.session.userId;
       this.userGroupService.getUserGroupsByUserId(requestUserId).then(result => {
         if (result) {
           res.status(200).json(result);
