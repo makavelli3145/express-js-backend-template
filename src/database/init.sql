@@ -167,12 +167,11 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.alerts (
     triggering_device_id integer,
-    "time" integer,
-    location integer,
+    "time" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    location text NOT NULL,
     id integer NOT NULL,
     status_id integer,
     message text,
-    column_name integer,
     type_id integer
 );
 
@@ -775,6 +774,7 @@ ALTER TABLE ONLY public.users_groups ALTER COLUMN id SET DEFAULT nextval('public
 -- Data for Name: alerts; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.alerts VALUES (30, '2025-01-03 12:07:27.873186', '37.4220936|-122.083922', 2, NULL, NULL, NULL);
 
 
 --
@@ -798,21 +798,27 @@ INSERT INTO public.alerts_type VALUES (2, 'recurring');
 -- Data for Name: devices; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.devices VALUES (3, '123456', 3, '2024-06-17 16:16:49.86759', '123');
-INSERT INTO public.devices VALUES (5, '12345678', 3, '2024-06-17 16:19:20.905372', '12345');
 INSERT INTO public.devices VALUES (6, '123456789', 5, '2024-06-17 16:20:17.652344', '123456');
 INSERT INTO public.devices VALUES (8, 'c2b9c2f7-7297-47ee-ba95-8a96836f604f', 6, '2024-10-24 17:49:29.775043', NULL);
-INSERT INTO public.devices VALUES (9, '06df387f-ead4-4014-8bfb-746422147536', 3, '2024-10-24 17:54:10.891335', NULL);
+INSERT INTO public.devices VALUES (24, '326ca8b5-a402-42c9-9d04-e3850f2fb08c', 14, '2025-01-02 11:21:01.470276', NULL);
+INSERT INTO public.devices VALUES (25, 'ec57ebe6-8168-4c1b-a3fb-5b38fa47a037', 14, '2025-01-02 11:23:33.129046', NULL);
+INSERT INTO public.devices VALUES (26, '28e05d9c-ff62-4534-b38c-d22603085be1', 14, '2025-01-02 11:26:16.16419', NULL);
+INSERT INTO public.devices VALUES (27, '73b08675-8b12-4762-89c4-271bfc33ef97', 14, '2025-01-02 11:27:48.336042', NULL);
+INSERT INTO public.devices VALUES (28, 'f42e2617-aaad-486a-b7c9-a5dd431fb7ba', 14, '2025-01-02 11:29:00.405796', NULL);
+INSERT INTO public.devices VALUES (29, '2d4ccee5-ab5a-4cf7-8924-0b8a1eea7ba6', 14, '2025-01-02 11:30:35.204627', NULL);
+INSERT INTO public.devices VALUES (30, 'c1a09368-0a7f-46f0-a930-b89033f90a59', 14, '2025-01-02 11:31:27.213744', NULL);
 
 
 --
 -- Data for Name: groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.groups VALUES (2, 'test', 3, '2024-06-17 16:15:20.271736', NULL);
 INSERT INTO public.groups VALUES (3, 'test2', 5, '2024-06-17 16:20:41.127677', NULL);
 INSERT INTO public.groups VALUES (54, 'mak''s gay friends', 6, '2024-10-24 17:50:53.119149', 'XT6-YUJ-678');
 INSERT INTO public.groups VALUES (6, 'test3', 5, '2024-10-16 18:12:04.135854', 'XT6-YUJ-688');
+INSERT INTO public.groups VALUES (55, 'Poes Lovers Anonymous ', 14, '2025-01-03 10:57:21.967945', '2X2-MEN-GL1');
+INSERT INTO public.groups VALUES (56, 'Lovers of thick woman', 14, '2025-01-03 11:43:44.205324', '53A-7X5-533');
+
 
 
 --
@@ -844,6 +850,7 @@ INSERT INTO public.push_notification_type VALUES (3, 'checkin', 1200, 0, false);
 --
 
 INSERT INTO public.push_notifications VALUES (2, '{"body":"test"}', 'test', 'test', 1, NULL);
+INSERT INTO public.push_notifications VALUES (4, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-03 12:07:27.873186', 1, 2);
 
 
 --
@@ -877,8 +884,9 @@ INSERT INTO public.roles_permissions VALUES (4, 4, 1);
 --
 
 INSERT INTO public.users VALUES (5, '9905205061080', 1, '011895', 'random', '2024-06-17 16:19:56.477872');
-INSERT INTO public.users VALUES (3, '9501185061080', 1, '0118', 'callan', '2024-06-17 16:15:04.961011');
 INSERT INTO public.users VALUES (6, '9812055281082', 1, '9808', 'gay boy', '2024-10-24 17:49:29.762936');
+INSERT INTO public.users VALUES (14, '9501185061080', 1, '0118', 'Callan', '2025-01-02 11:21:01.467056');
+
 
 
 --
@@ -887,17 +895,18 @@ INSERT INTO public.users VALUES (6, '9812055281082', 1, '9808', 'gay boy', '2024
 
 INSERT INTO public.users_groups VALUES (3, 5, 2, '2024-06-17 16:21:19.054075', 4);
 INSERT INTO public.users_groups VALUES (6, 5, 4, '2024-10-16 18:12:04.135854', 6);
-INSERT INTO public.users_groups VALUES (54, 3, 4, '2024-10-24 17:51:53.874787', 59);
 INSERT INTO public.users_groups VALUES (54, 6, 2, '2024-10-24 17:52:11.816624', 60);
-INSERT INTO public.users_groups VALUES (6, 3, 4, '2024-10-26 10:09:50.493523', 63);
-INSERT INTO public.users_groups VALUES (2, 3, 4, '2024-06-17 16:16:13.466136', 2);
+INSERT INTO public.users_groups VALUES (55, 14, 2, '2025-01-03 10:57:21.967945', 64);
+INSERT INTO public.users_groups VALUES (56, 14, 2, '2025-01-03 11:43:44.205324', 65);
+
 
 
 --
 -- Name: alerts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.alerts_id_seq', 1, false);
+SELECT pg_catalog.setval('public.alerts_id_seq', 2, true);
+
 
 
 --
@@ -917,15 +926,16 @@ SELECT pg_catalog.setval('public.alerts_type_id_seq', 2, true);
 --
 -- Name: devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
+SELECT pg_catalog.setval('public.devices_id_seq', 30, true);
 
-SELECT pg_catalog.setval('public.devices_id_seq', 9, true);
 
 
 --
 -- Name: groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.groups_id_seq', 54, true);
+SELECT pg_catalog.setval('public.groups_id_seq', 56, true);
+
 
 
 --
@@ -953,7 +963,14 @@ SELECT pg_catalog.setval('public.push_notification_type_id_seq', 3, true);
 -- Name: push_notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.push_notifications_id_seq', 2, true);
+SELECT pg_catalog.setval('public.push_notifications_id_seq', 4, true);
+
+
+--
+-- Name: push_notifications_users_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.push_notifications_users_groups_id_seq', 1, false);
 
 
 --
@@ -981,14 +998,14 @@ SELECT pg_catalog.setval('public.user_permissions_id_seq', 4, true);
 -- Name: users_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_groups_id_seq', 63, true);
+SELECT pg_catalog.setval('public.users_groups_id_seq', 65, true);
+
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
-
-SELECT pg_catalog.setval('public.users_id_seq', 6, true);
+SELECT pg_catalog.setval('public.users_id_seq', 14, true);
 
 
 --
@@ -1171,7 +1188,8 @@ CREATE TRIGGER update_completed_at_trigger BEFORE UPDATE ON public.push_notifica
 --
 
 ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_devices_id_fk FOREIGN KEY (triggering_device_id) REFERENCES public.devices(id);
+    ADD CONSTRAINT alerts_devices_id_fk FOREIGN KEY (triggering_device_id) REFERENCES public.devices(id) ON DELETE CASCADE;
+
 
 
 --

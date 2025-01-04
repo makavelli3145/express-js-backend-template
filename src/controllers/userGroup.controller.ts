@@ -6,15 +6,16 @@ import { UserGroup, JoinUserGroup } from '@interfaces/userGroup.interface';
 export class UserGroupController {
   private userGroupService = Container.get(UserGroupService);
 
-  public getGroupsByUserId = async (req: Request, res: Response, next: NextFunction) => {
+  public getUserGroupsByGroupId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Extracting user id from URL parameters and convert userId to number
-      const userId = Number(req.query.id);
-      this.userGroupService.getGroupsByUserId(userId).then(result => {
+      const groupId = Number(req.query.id);
+      const user_id = req.session.userId;
+      this.userGroupService.getUserGroupsByGroupId(groupId, user_id).then(result => {
         if (result) {
           res.status(200).json(result);
         } else {
-          res.status(500).send('a group could not be created at this time');
+          res.status(500).send(`users could not be found for group with id: ${groupId}`);
         }
       });
     } catch (error) {
@@ -22,21 +23,22 @@ export class UserGroupController {
     }
   };
 
-  public getAllUsersByGroupId = async (req: Request, res: Response, next: NextFunction) => {
+  public getUserGroupsByUserId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Extracting user id from URL parameters and convert userId to number
-      const groupId = Number(req.query.id);
-      this.userGroupService.getAllUsersByGroupId(groupId).then(result => {
+      const requestUserId = Number(req.query.id);
+      this.userGroupService.getUserGroupsByUserId(requestUserId).then(result => {
         if (result) {
           res.status(200).json(result);
         } else {
-          res.status(500).send('a group could not be created at this time');
+          res.status(500).send(`users-groups could not be found for group with id: ${requestUserId}`);
         }
       });
     } catch (error) {
       next(error);
     }
   };
+
   public createUserGroup = (req: Request, res: Response, next: NextFunction) => {
     try {
       const reqUserGroup: UserGroup = req.body;
