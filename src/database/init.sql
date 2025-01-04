@@ -820,6 +820,7 @@ INSERT INTO public.groups VALUES (55, 'Poes Lovers Anonymous ', 14, '2025-01-03 
 INSERT INTO public.groups VALUES (56, 'Lovers of thick woman', 14, '2025-01-03 11:43:44.205324', '53A-7X5-533');
 
 
+
 --
 -- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -887,6 +888,7 @@ INSERT INTO public.users VALUES (6, '9812055281082', 1, '9808', 'gay boy', '2024
 INSERT INTO public.users VALUES (14, '9501185061080', 1, '0118', 'Callan', '2025-01-02 11:21:01.467056');
 
 
+
 --
 -- Data for Name: users_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -898,11 +900,13 @@ INSERT INTO public.users_groups VALUES (55, 14, 2, '2025-01-03 10:57:21.967945',
 INSERT INTO public.users_groups VALUES (56, 14, 2, '2025-01-03 11:43:44.205324', 65);
 
 
+
 --
 -- Name: alerts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.alerts_id_seq', 2, true);
+
 
 
 --
@@ -922,8 +926,8 @@ SELECT pg_catalog.setval('public.alerts_type_id_seq', 2, true);
 --
 -- Name: devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
-
 SELECT pg_catalog.setval('public.devices_id_seq', 30, true);
+
 
 
 --
@@ -931,6 +935,7 @@ SELECT pg_catalog.setval('public.devices_id_seq', 30, true);
 --
 
 SELECT pg_catalog.setval('public.groups_id_seq', 56, true);
+
 
 
 --
@@ -969,6 +974,13 @@ SELECT pg_catalog.setval('public.push_notifications_users_groups_id_seq', 1, fal
 
 
 --
+-- Name: push_notifications_users_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.push_notifications_users_groups_id_seq', 1, false);
+
+
+--
 -- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -989,10 +1001,10 @@ SELECT pg_catalog.setval('public.user_permissions_id_seq', 4, true);
 SELECT pg_catalog.setval('public.users_groups_id_seq', 65, true);
 
 
+
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
-
 SELECT pg_catalog.setval('public.users_id_seq', 14, true);
 
 
@@ -1177,6 +1189,7 @@ CREATE TRIGGER update_completed_at_trigger BEFORE UPDATE ON public.push_notifica
 
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_devices_id_fk FOREIGN KEY (triggering_device_id) REFERENCES public.devices(id) ON DELETE CASCADE;
+
 
 
 --

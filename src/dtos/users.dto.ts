@@ -80,11 +80,12 @@ function luhnsChecksum(digitArray: number[]): boolean {
 }
 
 export class CreateUserDto {
+
   @IsString()
+  @IsNotEmpty()
   @Validate(IsValidSouthAfricanId, {
     message: 'Invalid South African ID number',
   })
-  @IsNotEmpty()
   public id_number: string;
 
   @IsString()
