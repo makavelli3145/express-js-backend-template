@@ -52,10 +52,16 @@ export class AlertService {
   }
 
   async getAlertByUserId(userId: number, groupId: number): Promise<Group | boolean | NodeJS.ErrnoException> {
-    const sql = `SELECT alerts.* FROM alerts
-               LEFT JOIN devices ON devices.id = alerts.triggering_device_id
+    const sql = `SELECT alerts.*, alerts_status.status as status,
+                        users.name as user_name,
+                        groups.name as group_name
+               FROM alerts
+               JOIN alerts_type on alerts.type_id = alerts_type.id
+               JOIN alerts_status on alerts.status_id = alerts_status.id
+               JOIN devices ON devices.id = alerts.triggering_device_id
                JOIN users ON users.id = devices.user_id
                JOIN users_groups ON users_groups.user_id = devices.user_id
+               JOIN groups ON users_groups.group_id = groups.id
                WHERE devices.user_id = $1 and users_groups.group_id = $2 ;`;
 
     return await pg
@@ -67,11 +73,17 @@ export class AlertService {
   }
 
   async getAlertByGroupId(groupId: number): Promise<Group | boolean | NodeJS.ErrnoException> {
-    const sql = `SELECT alerts.* FROM alerts
-      JOIN devices ON devices.id = alerts.triggering_device_id
-      JOIN users ON users.id = devices.user_id
-      JOIN users_groups ON users_groups.user_id = users.id
-      WHERE users_groups.group_id = $1;`;
+    const sql = `SELECT alerts.*, alerts_status.status as status,
+                        users.name as user_name,
+                        groups.name as group_name
+                 FROM alerts
+                        JOIN alerts_type on alerts.type_id = alerts_type.id
+                        JOIN alerts_status on alerts.status_id = alerts_status.id
+                        JOIN devices ON devices.id = alerts.triggering_device_id
+                        JOIN users ON users.id = devices.user_id
+                        JOIN users_groups ON users_groups.user_id = users.id
+                        JOIN groups ON users_groups.group_id = groups.id
+                WHERE users_groups.group_id = $1;`;
 
     return await pg
       .query(sql, [groupId])
