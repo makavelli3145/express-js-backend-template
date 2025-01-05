@@ -21,9 +21,8 @@ services:
       REDIS_HOST: redis-solace
       OTEL_METRICS_EXPORTER: None
     volumes:
-      - ./solace-api:/app
-      - /app/node_modules
-    restart: unless-stopped
+      - ./:/solace
+      - /solace/node_modules
     networks:
       - backend-solace
     depends_on:

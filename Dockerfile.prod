@@ -2,10 +2,10 @@
 FROM node:20.11.1-buster-slim
 
 # Copy Dir
-COPY . ./app
+COPY . ./solace
 
 # Work to Dir
-WORKDIR /app
+WORKDIR /solace
 
 # Install Node Package
 RUN npm install
