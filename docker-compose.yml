@@ -23,7 +23,6 @@ services:
     volumes:
       - ./:/solace
       - /solace/node_modules
-    restart: unless-stopped
     networks:
       - backend-solace
     depends_on:
