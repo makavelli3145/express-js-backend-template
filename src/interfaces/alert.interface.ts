@@ -1,6 +1,6 @@
 export interface Alert {
   triggering_device_id: number;
-  time;
+  time?: number;
   location: string;
   id?: number;
   status_id: number;

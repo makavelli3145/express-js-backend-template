@@ -6,10 +6,10 @@ import { Alert } from '@interfaces/alert.interface';
 @Service()
 export class AlertService {
   public createAlert = async (alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { device_uuid, location, status_id, type_id } = alert;
+    const { triggering_device_id, location, status_id, type_id } = alert;
     const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4) RETURNING *;`;
     return await pg
-      .query(sql, [device_uuid, location, status_id, type_id])
+      .query(sql, [triggering_device_id, location, status_id, type_id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
@@ -21,11 +21,11 @@ export class AlertService {
   };
 
   public updateAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { triggering_device_id, location, status_id, type_id, id } = alert;
+    const { status_id, type_id, id } = alert;
     const sql = `
-      UPDATE alerts SET triggering_device_id = $1, location = $2, status_id=$3, type_id=$4 WHERE id = $5 RETURNING *;`;
+      UPDATE alerts SET status_id=$1, type_id=$2 WHERE id = $3 RETURNING *;`;
     return await pg
-      .query(sql, [triggering_device_id, location, status_id, type_id, id])
+      .query(sql, [status_id, type_id, id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];

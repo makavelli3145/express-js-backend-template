@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
 
 export class CreateAlertDto {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  public triggering_device_id: string;
+  public triggering_device_id: number;
   @IsString()
   @IsNotEmpty()
   @Matches(/^-?\d+(\.\d+)?\|-?\d+(\.\d+)?$/, {
