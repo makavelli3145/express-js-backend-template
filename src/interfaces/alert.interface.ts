@@ -1,5 +1,5 @@
 export interface Alert {
-  triggering_device_id: number;
+  device_uuid: string;
   time?: number;
   location: string;
   id?: number;

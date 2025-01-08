@@ -6,10 +6,10 @@ import { Alert } from '@interfaces/alert.interface';
 @Service()
 export class AlertService {
   public createAlert = async (alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { triggering_device_id, location, status_id, type_id } = alert;
+    const { device_uuid, location, status_id, type_id } = alert;
     const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4) RETURNING *;`;
     return await pg
-      .query(sql, [triggering_device_id, location, status_id, type_id])
+      .query(sql, [device_uuid, location, status_id, type_id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
