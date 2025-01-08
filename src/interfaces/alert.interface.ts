@@ -1,6 +1,9 @@
 export interface Alert {
   triggering_device_id: number;
+  time;
   location: string;
-  push_notification_id?: number;
   id?: number;
+  status_id: number;
+  message?: string;
+  type_id: number;
 }

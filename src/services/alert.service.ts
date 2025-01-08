@@ -21,11 +21,11 @@ export class AlertService {
   };
 
   public updateAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { triggering_device_id, location, push_notification_id, id } = alert;
+    const { triggering_device_id, location, status_id, type_id, id } = alert;
     const sql = `
-      UPDATE alerts SET triggering_device_id = $1, location = $2, push_notification_id=$3 WHERE id = $4 RETURNING *;`;
+      UPDATE alerts SET triggering_device_id = $1, location = $2, status_id=$3, type_id=$4 WHERE id = $5 RETURNING *;`;
     return await pg
-      .query(sql, [triggering_device_id, location, push_notification_id, id])
+      .query(sql, [triggering_device_id, location, status_id, type_id, id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
