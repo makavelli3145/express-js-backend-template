@@ -5,9 +5,11 @@ import { AlertService } from '@services/alert.service';
 
 export class AlertController {
   public alertService = Container.get(AlertService);
+
   public createAlert = (req: Request, res: Response, next: NextFunction) => {
     try {
       const alert: Alert = req.body;
+      console.log(alert);
       this.alertService.createAlert(alert).then(result => {
         if (result) {
           res.status(200).json(result);
