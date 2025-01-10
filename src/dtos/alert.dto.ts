@@ -25,6 +25,12 @@ export class UpdateAlertDto extends CreateAlertDto {
   @IsNumber()
   @IsNotEmpty()
   public id: number;
+
+  @IsString()
+  @Matches(/^[A-Z][a-z]+\s\d{2}:\d{2}$/, {
+    message: 'alert schedule time must be a string in the format <day> <HH:MM>',
+  })
+  public alert_scheduled_time: string;
 }
 
 export class DeleteAlertDto extends UpdateAlertDto {}
