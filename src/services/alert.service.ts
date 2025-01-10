@@ -24,18 +24,41 @@ export class AlertService {
   public updateAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
     const { status_id, type_id, alert_scheduled_time, id } = alert;
     console.log(alert);
-    const sql = `
-      UPDATE alerts SET status_id=$1, type_id=$2, alert_scheduled_time=$3 WHERE id = $4 RETURNING *;`;
-    return await pg
-      .query(sql, [status_id, type_id, alert_scheduled_time, id])
-      .then(result => {
-        if (result.rowCount > 0) {
-          return result.rows[0];
-        } else {
-          return false;
-        }
-      })
-      .catch(error => error);
+    if(alert_scheduled_time) {
+      const sql = `
+        UPDATE alerts
+        SET status_id=$1,
+            type_id=$2,
+        WHERE id = $3 RETURNING *;`;
+      return await pg
+        .query(sql, [status_id, type_id, id])
+        .then(result => {
+          if (result.rowCount > 0) {
+            return result.rows[0];
+          } else {
+            return false;
+          }
+        })
+        .catch(error => error);
+    }else{
+      const sql = `
+        UPDATE alerts
+        SET status_id=$1,
+            type_id=$2,
+            alert_scheduled_time=$3
+        WHERE id = $4 RETURNING *;`;
+      return await pg
+        .query(sql, [status_id, type_id, alert_scheduled_time, id])
+        .then(result => {
+          if (result.rowCount > 0) {
+            return result.rows[0];
+          } else {
+            return false;
+          }
+        })
+        .catch(error => error);
+
+    }
   };
 
   async deleteAlert(alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> {
@@ -96,12 +119,7 @@ export class AlertService {
   }
 
   async getAllAlerts(user_id: number) {
-    const sql = `SELECT DISTINCT alerts.id as id,
-                                 alerts.time,
-                                 alerts.location,
-                                 alerts.message,
-                                 alerts_status.status as status,
-                                 alerts_type.type as type,
+    const sql = `SELECT DISTINCT alerts.*,
                                  u.name as user_name,
                                  groups.name as group_name
                                  FROM alerts
