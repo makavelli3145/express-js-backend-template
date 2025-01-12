@@ -6,11 +6,10 @@ import { Alert } from '@interfaces/alert.interface';
 @Service()
 export class AlertService {
   public createAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { device_uuid, location, status_id, type_id } = alert;
-    console.log('service', alert);
-    const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4) RETURNING *;`;
+    const { device_uuid, location, status_id, type_id , alert_scheduled_time, message, recurring_alert_end_user_id} = alert;
+    const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id, alert_scheduled_time, message, recurring_alert_end_user_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4, $5, $6, $7) RETURNING *;`;
     return await pg
-      .query(sql, [device_uuid, location, status_id, type_id])
+      .query(sql, [device_uuid, location, status_id, type_id,alert_scheduled_time, message, recurring_alert_end_user_id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
@@ -22,16 +21,17 @@ export class AlertService {
   };
 
   public updateAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { status_id, type_id, alert_scheduled_time, id } = alert;
-    console.log(alert);
+    const { status_id, type_id, alert_scheduled_time, message, id } = alert;
     if(alert_scheduled_time) {
       const sql = `
         UPDATE alerts
         SET status_id=$1,
             type_id=$2,
-        WHERE id = $3 RETURNING *;`;
+            alert_scheduled_time=$3,
+            message=$4
+        WHERE id = $5 RETURNING *;`;
       return await pg
-        .query(sql, [status_id, type_id, id])
+        .query(sql, [status_id, type_id, alert_scheduled_time, message, id])
         .then(result => {
           if (result.rowCount > 0) {
             return result.rows[0];
@@ -44,8 +44,7 @@ export class AlertService {
       const sql = `
         UPDATE alerts
         SET status_id=$1,
-            type_id=$2,
-            alert_scheduled_time=$3
+            type_id=$2
         WHERE id = $4 RETURNING *;`;
       return await pg
         .query(sql, [status_id, type_id, alert_scheduled_time, id])

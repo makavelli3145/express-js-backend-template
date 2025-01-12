@@ -7,4 +7,5 @@ export interface Alert {
   message?: string;
   type_id: number;
   alert_scheduled_time?: string;
+  recurring_alert_end_user_id?: number;
 }

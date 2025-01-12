@@ -26,6 +26,14 @@ export class CreateAlertDto {
     message: 'alert schedule time must be a string in the format <day> <HH:MM>',
   })
   public alert_scheduled_time?: string;
+
+  @IsString()
+  @IsOptional()
+  public message?: string;
+
+  @IsNumber()
+  @IsOptional()
+  public recurring_alert_end_user_id?: number;
 }
 
 export class UpdateAlertDto extends CreateAlertDto {
