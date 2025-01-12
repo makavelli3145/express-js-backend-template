@@ -6,4 +6,5 @@ export interface Alert {
   status_id: number;
   message?: string;
   type_id: number;
+  alert_scheduled_time?: string;
 }

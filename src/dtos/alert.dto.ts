@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
+import {IsNotEmpty, IsNumber, IsOptional, IsString, Matches} from 'class-validator';
 
 export class CreateAlertDto {
   @IsString()
@@ -19,6 +19,13 @@ export class CreateAlertDto {
   @IsNumber()
   @IsNotEmpty()
   public type_id: number;
+
+  @IsString()
+  @IsOptional()
+  @Matches(/^[A-Z][a-z]+\s\d{2}:\d{2}$/, {
+    message: 'alert schedule time must be a string in the format <day> <HH:MM>',
+  })
+  public alert_scheduled_time?: string;
 }
 
 export class UpdateAlertDto extends CreateAlertDto {
