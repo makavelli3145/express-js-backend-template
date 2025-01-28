@@ -9,7 +9,6 @@ export class AlertController {
   public createAlert = (req: Request, res: Response, next: NextFunction) => {
     try {
       const alert: Alert = req.body;
-      console.log(alert);
       this.alertService.createAlert(alert).then(result => {
         if (result) {
           res.status(200).json(result);
@@ -96,7 +95,6 @@ export class AlertController {
         try {
           const user_id = req.session.userId;
           this.alertService.getAllAlerts(user_id).then(result => {
-            console.log(result);
             if (result) {
               res.status(200).json(result);
             } else {
