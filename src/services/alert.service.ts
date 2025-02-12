@@ -87,7 +87,7 @@ export class AlertService {
                JOIN users ON users.id = devices.user_id
                JOIN users_groups ON users_groups.user_id = devices.user_id
                JOIN groups ON users_groups.group_id = groups.id
-               WHERE devices.user_id = $1 and users_groups.group_id = $2 ;`;
+               WHERE users_groups.group_id = $2 and alerts.recurring_alert_end_user_id = $1 ;`;
 
     return await pg
       .query(sql, [userId, groupId])
