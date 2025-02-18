@@ -5,11 +5,11 @@ import { Alert } from '@interfaces/alert.interface';
 
 @Service()
 export class AlertService {
-  public createAlert = async (alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { device_uuid, location, status_id, type_id } = alert;
-    const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4) RETURNING *;`;
+  public createAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
+    const { device_uuid, location, status_id, type_id , alert_scheduled_time, message, recurring_alert_end_user_id} = alert;
+    const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id, alert_scheduled_time, message, recurring_alert_end_user_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4, $5, $6, $7) RETURNING *;`;
     return await pg
-      .query(sql, [device_uuid, location, status_id, type_id])
+      .query(sql, [device_uuid, location, status_id, type_id,alert_scheduled_time, message, recurring_alert_end_user_id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
@@ -21,19 +21,44 @@ export class AlertService {
   };
 
   public updateAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { triggering_device_id, location, push_notification_id, id } = alert;
-    const sql = `
-      UPDATE alerts SET triggering_device_id = $1, location = $2, push_notification_id=$3 WHERE id = $4 RETURNING *;`;
-    return await pg
-      .query(sql, [triggering_device_id, location, push_notification_id, id])
-      .then(result => {
-        if (result.rowCount > 0) {
-          return result.rows[0];
-        } else {
-          return false;
-        }
-      })
-      .catch(error => error);
+    const { status_id, type_id, alert_scheduled_time, message, id } = alert;
+    console.log("alert in the update alert service: ", alert)
+    if(alert_scheduled_time) {
+      const sql = `
+        UPDATE alerts
+        SET status_id=$1,
+            type_id=$2,
+            alert_scheduled_time=$3,
+            message=$4
+        WHERE id = $5 RETURNING *;`;
+      return await pg
+        .query(sql, [status_id, type_id, alert_scheduled_time, message, id])
+        .then(result => {
+          if (result.rowCount > 0) {
+            return result.rows[0];
+          } else {
+            return false;
+          }
+        })
+        .catch(error => error);
+    }else{
+      const sql = `
+        UPDATE alerts
+        SET status_id=$1,
+            type_id=$2
+        WHERE id = $3 RETURNING *;`;
+      return await pg
+        .query(sql, [status_id, type_id, id])
+        .then(result => {
+          if (result.rowCount > 0) {
+            return result.rows[0];
+          } else {
+            return false;
+          }
+        })
+        .catch(error => error);
+
+    }
   };
 
   async deleteAlert(alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> {
@@ -62,7 +87,7 @@ export class AlertService {
                JOIN users ON users.id = devices.user_id
                JOIN users_groups ON users_groups.user_id = devices.user_id
                JOIN groups ON users_groups.group_id = groups.id
-               WHERE devices.user_id = $1 and users_groups.group_id = $2 ;`;
+               WHERE users_groups.group_id = $2 and alerts.recurring_alert_end_user_id = $1 ;`;
 
     return await pg
       .query(sql, [userId, groupId])
@@ -94,12 +119,7 @@ export class AlertService {
   }
 
   async getAllAlerts(user_id: number) {
-    const sql = `SELECT DISTINCT alerts.id as id,
-                                 alerts.time,
-                                 alerts.location,
-                                 alerts.message,
-                                 alerts_status.status as status,
-                                 alerts_type.type as type,
+    const sql = `SELECT DISTINCT alerts.*,
                                  u.name as user_name,
                                  groups.name as group_name
                                  FROM alerts
