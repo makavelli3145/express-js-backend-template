@@ -5,6 +5,30 @@ import { Alert } from '@interfaces/alert.interface';
 
 @Service()
 export class AlertService {
+  public createAlertSeenBy = async (alertId: number, userId: number): Promise<Alert | boolean | NodeJS.ErrnoException> => {
+    const sql = `INSERT INTO seen_by (alert_id, user_id) VALUES ($1, $2) RETURNING *;`;
+    console.log("testing Service createAlertSeenBy crash")
+    return await pg
+      .query(sql, [alertId, userId])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        }
+      })
+  }
+
+  public createAlertRespondedBy = async (alertId: number, userId: number): Promise<Alert | boolean | NodeJS.ErrnoException> => {
+    const sql = `INSERT INTO responded_by (alert_id, user_id) VALUES ($1, $2) RETURNING *;`;
+    console.log("testing Controller createAlertRespondingBy crash")
+    return await pg
+      .query(sql, [alertId, userId])
+      .then(result => {
+        if (result.rowCount > 0) {
+          return result.rows[0];
+        }
+      })
+  }
+
   public createAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
     const { device_uuid, location, status_id, type_id , alert_scheduled_time, message, recurring_alert_end_user_id} = alert;
     const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id, alert_scheduled_time, message, recurring_alert_end_user_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4, $5, $6, $7) RETURNING *;`;
