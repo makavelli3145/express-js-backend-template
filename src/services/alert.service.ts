@@ -101,16 +101,21 @@ export class AlertService {
   }
 
   async getAlertByUserId(userId: number, groupId: number): Promise<Group | boolean | NodeJS.ErrnoException> {
-    const sql = `SELECT alerts.*, alerts_status.status as status,
+    const sql = `SELECT alerts.id,
                         users.name as user_name,
-                        groups.name as group_name
-               FROM alerts
-               JOIN alerts_type on alerts.type_id = alerts_type.id
-               JOIN alerts_status on alerts.status_id = alerts_status.id
-               JOIN devices ON devices.id = alerts.triggering_device_id
-               JOIN users ON users.id = devices.user_id
-               JOIN users_groups ON users_groups.user_id = devices.user_id
-               JOIN groups ON users_groups.group_id = groups.id
+                        groups.name as group_name,
+                        users_responded.name as users_responded,
+                        users_seen.name as users_seen
+
+                 FROM alerts
+                        JOIN devices ON devices.id = alerts.triggering_device_id
+                        JOIN users ON users.id = devices.user_id
+                        JOIN users_groups ON users_groups.user_id = devices.user_id
+                        JOIN groups ON users_groups.group_id = groups.id
+                        LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
+                        LEFT JOIN users as users_responded ON users_responded.id = responded_by.user_id
+                        LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
+                        LEFT JOIN users as users_seen ON users_seen.id = seen_by.user_id
                WHERE users_groups.group_id = $2 and alerts.recurring_alert_end_user_id = $1 ;`;
 
     return await pg
