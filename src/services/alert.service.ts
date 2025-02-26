@@ -5,17 +5,25 @@ import { Alert } from '@interfaces/alert.interface';
 
 @Service()
 export class AlertService {
-  public createAlertSeenBy = async (alertId: number, userId: number): Promise<Alert | boolean | NodeJS.ErrnoException> => {
+  public createAlertSeenBy = async (alertId: number, userId: number): Promise<{ alert_id: number; user_id: number } | boolean | NodeJS.ErrnoException> => {
     const sql = `INSERT INTO seen_by (alert_id, user_id) VALUES ($1, $2) RETURNING *;`;
-    console.log("testing Service createAlertSeenBy crash")
-    return await pg
-      .query(sql, [alertId, userId])
-      .then(result => {
-        if (result.rowCount > 0) {
-          return result.rows[0];
-        }
-      })
-  }
+    console.log("Testing Service createAlertSeenBy crash");
+
+    try {
+      const result = await pg.query(sql, [alertId, userId]);
+
+      console.log("Query successful");
+      if (result.rowCount > 0) {
+        console.log("result.rows[0]: ", result.rows[0]);
+        return result.rows[0];
+      }
+      return false;
+    } catch (error) {
+      console.error("Error in createAlertSeenBy:", error);
+      return error;
+    }
+  };
+
 
   public createAlertRespondedBy = async (alertId: number, userId: number): Promise<Alert | boolean | NodeJS.ErrnoException> => {
     const sql = `INSERT INTO responded_by (alert_id, user_id) VALUES ($1, $2) RETURNING *;`;
@@ -85,7 +93,7 @@ export class AlertService {
     }
   };
 
-  async deleteAlert(alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> {
+  async deleteAlert(alert: Alert): Promise<Alert | boolean | NodeJS.ErrnoException> {
     const { id } = alert;
     const sql = `Delete FROM alerts where id = $1 RETURNING *;`;
     return await pg
@@ -101,26 +109,45 @@ export class AlertService {
   }
 
   async getAlertByUserId(userId: number, groupId: number): Promise<Group | boolean | NodeJS.ErrnoException> {
-    const sql = `SELECT alerts.id,
-                        users.name as user_name,
-                        groups.name as group_name,
-                        users_responded.name as users_responded,
-                        users_seen.name as users_seen
+    const sql = `SELECT  alerts.id,
+                         users.name AS user_name,
+                         groups.name AS group_name,
+                         COALESCE(
+                                         JSON_AGG(
+                                         DISTINCT JSONB_BUILD_OBJECT(
+                                                 'name', users_responded.name,
+                                                 'response_time', responded_by.time
+                                                  )
+                                                 ) FILTER (WHERE users_responded.id IS NOT NULL), '[]'::JSON
+                         ) AS users_responded,
+                         COALESCE(
+                                         JSON_AGG(
+                                         DISTINCT JSONB_BUILD_OBJECT(
+                                                 'name', users_seen.name,
+                                                 'seen_time', seen_by.time
+                                                  )
+                                                 ) FILTER (WHERE users_seen.id IS NOT NULL), '[]'::JSON
+                         ) AS users_seen
+                  FROM alerts
+                           JOIN devices ON devices.id = alerts.triggering_device_id
+                           JOIN users ON users.id = devices.user_id
+                           JOIN users_groups ON users_groups.user_id = devices.user_id
+                           JOIN groups ON users_groups.group_id = groups.id
+                           LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
+                           LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
+                           LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
+                           LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
+                  WHERE users_groups.group_id = $2
+                    AND alerts.recurring_alert_end_user_id = $1
+                  GROUP BY alerts.id, users.name, groups.name;`;
 
-                 FROM alerts
-                        JOIN devices ON devices.id = alerts.triggering_device_id
-                        JOIN users ON users.id = devices.user_id
-                        JOIN users_groups ON users_groups.user_id = devices.user_id
-                        JOIN groups ON users_groups.group_id = groups.id
-                        LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
-                        LEFT JOIN users as users_responded ON users_responded.id = responded_by.user_id
-                        LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
-                        LEFT JOIN users as users_seen ON users_seen.id = seen_by.user_id
-               WHERE users_groups.group_id = $2 and alerts.recurring_alert_end_user_id = $1 ;`;
+
+    console.log("before sql query in service");
 
     return await pg
       .query(sql, [userId, groupId])
       .then(result => {
+        console.log("get alert by userId result", result);
         return result.rows;
       })
       .catch(err => err);
