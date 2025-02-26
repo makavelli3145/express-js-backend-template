@@ -537,11 +537,34 @@ ALTER SEQUENCE public.push_notifications_users_groups_id_seq OWNED BY public.pus
 CREATE TABLE public.responded_by (
     id integer NOT NULL,
     alert_id integer,
-    user_id integer
+    user_id integer,
+    "time" timestamp without time zone DEFAULT now()
 );
 
 
 ALTER TABLE public.responded_by OWNER TO postgres;
+
+--
+-- Name: responded_by_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.responded_by_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.responded_by_id_seq OWNER TO postgres;
+
+--
+-- Name: responded_by_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.responded_by_id_seq OWNED BY public.responded_by.id;
+
 
 --
 -- Name: roles; Type: TABLE; Schema: public; Owner: postgres
@@ -597,11 +620,34 @@ ALTER TABLE public.roles_permissions OWNER TO postgres;
 CREATE TABLE public.seen_by (
     id integer NOT NULL,
     user_id integer,
-    alert_id integer
+    alert_id integer,
+    "time" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.seen_by OWNER TO postgres;
+
+--
+-- Name: seen_by_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.seen_by_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.seen_by_id_seq OWNER TO postgres;
+
+--
+-- Name: seen_by_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.seen_by_id_seq OWNED BY public.seen_by.id;
+
 
 --
 -- Name: user_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -771,6 +817,13 @@ ALTER TABLE ONLY public.push_notifications_users_groups ALTER COLUMN id SET DEFA
 
 
 --
+-- Name: responded_by id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.responded_by ALTER COLUMN id SET DEFAULT nextval('public.responded_by_id_seq'::regclass);
+
+
+--
 -- Name: roles id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -782,6 +835,13 @@ ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_
 --
 
 ALTER TABLE ONLY public.roles_permissions ALTER COLUMN id SET DEFAULT nextval('public.user_permissions_id_seq'::regclass);
+
+
+--
+-- Name: seen_by id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.seen_by ALTER COLUMN id SET DEFAULT nextval('public.seen_by_id_seq'::regclass);
 
 
 --
@@ -1031,10 +1091,24 @@ SELECT pg_catalog.setval('public.push_notifications_users_groups_id_seq', 1, fal
 
 
 --
+-- Name: responded_by_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.responded_by_id_seq', 3, true);
+
+
+--
 -- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.roles_id_seq', 4, true);
+
+
+--
+-- Name: seen_by_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.seen_by_id_seq', 1, false);
 
 
 --
