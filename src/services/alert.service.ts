@@ -109,45 +109,44 @@ export class AlertService {
   }
 
   async getAlertByUserId(userId: number, groupId: number): Promise<Group | boolean | NodeJS.ErrnoException> {
-    const sql = `SELECT  alerts.id,
-                         users.name AS user_name,
-                         groups.name AS group_name,
-                         COALESCE(
-                                         JSON_AGG(
-                                         DISTINCT JSONB_BUILD_OBJECT(
-                                                 'name', users_responded.name,
-                                                 'response_time', responded_by.time
-                                                  )
-                                                 ) FILTER (WHERE users_responded.id IS NOT NULL), '[]'::JSON
-                         ) AS users_responded,
-                         COALESCE(
-                                         JSON_AGG(
-                                         DISTINCT JSONB_BUILD_OBJECT(
-                                                 'name', users_seen.name,
-                                                 'seen_time', seen_by.time
-                                                  )
-                                                 ) FILTER (WHERE users_seen.id IS NOT NULL), '[]'::JSON
-                         ) AS users_seen
-                  FROM alerts
-                           JOIN devices ON devices.id = alerts.triggering_device_id
-                           JOIN users ON users.id = devices.user_id
-                           JOIN users_groups ON users_groups.user_id = devices.user_id
-                           JOIN groups ON users_groups.group_id = groups.id
-                           LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
-                           LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
-                           LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
-                           LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
-                  WHERE users_groups.group_id = $2
-                    AND alerts.recurring_alert_end_user_id = $1
-                  GROUP BY alerts.id, users.name, groups.name;`;
-
-
-    console.log("before sql query in service");
+    const sql = `SELECT alerts.*,
+                        alerts_status.status as status,  -- Ensure this is in GROUP BY
+                        users.name AS user_name,
+                        groups.name AS group_name,
+                        COALESCE(
+                          JSON_AGG(
+                            DISTINCT JSONB_BUILD_OBJECT(
+                                'name', users_responded.name,
+                                'response_time', responded_by.time
+                                 )
+                                ) FILTER (WHERE users_responded.id IS NOT NULL), '[]'::JSON
+                        ) AS users_responded,
+                        COALESCE(
+                          JSON_AGG(
+                            DISTINCT JSONB_BUILD_OBJECT(
+                                'name', users_seen.name,
+                                'seen_time', seen_by.time
+                                 )
+                                ) FILTER (WHERE users_seen.id IS NOT NULL), '[]'::JSON
+                        ) AS users_seen
+                 FROM alerts
+                        JOIN alerts_type on alerts.type_id = alerts_type.id
+                        JOIN alerts_status on alerts.status_id = alerts_status.id
+                        JOIN devices ON devices.id = alerts.triggering_device_id
+                        JOIN users ON users.id = devices.user_id
+                        JOIN users_groups ON users_groups.user_id = devices.user_id
+                        JOIN groups ON users_groups.group_id = groups.id
+                        LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
+                        LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
+                        LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
+                        LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
+                 WHERE users_groups.group_id = $2
+                   AND alerts.recurring_alert_end_user_id = $1
+                 GROUP BY alerts.id, alerts_status.status, users.name, groups.name;`;
 
     return await pg
       .query(sql, [userId, groupId])
       .then(result => {
-        console.log("get alert by userId result", result);
         return result.rows;
       })
       .catch(err => err);
