@@ -6,28 +6,26 @@ import { Alert } from '@interfaces/alert.interface';
 @Service()
 export class AlertService {
   public createAlertSeenBy = async (alertId: number, userId: number): Promise<{ alert_id: number; user_id: number } | boolean | NodeJS.ErrnoException> => {
-    const sql = `INSERT INTO seen_by (alert_id, user_id) VALUES ($1, $2) RETURNING *;`;
-    console.log("Testing Service createAlertSeenBy crash");
+    const sql = `INSERT INTO seen_by (alert_id, user_id)
+                 VALUES ($1, $2)
+                   ON CONFLICT (alert_id, user_id) DO NOTHING RETURNING *;`;
 
     try {
       const result = await pg.query(sql, [alertId, userId]);
-
-      console.log("Query successful");
       if (result.rowCount > 0) {
-        console.log("result.rows[0]: ", result.rows[0]);
         return result.rows[0];
       }
       return false;
     } catch (error) {
-      console.error("Error in createAlertSeenBy:", error);
       return error;
     }
   };
 
 
   public createAlertRespondedBy = async (alertId: number, userId: number): Promise<Alert | boolean | NodeJS.ErrnoException> => {
-    const sql = `INSERT INTO responded_by (alert_id, user_id) VALUES ($1, $2) RETURNING *;`;
-    console.log("testing Controller createAlertRespondingBy crash")
+    const sql = `INSERT INTO responded_by (alert_id, user_id)
+                 VALUES ($1, $2)
+                   ON CONFLICT (alert_id, user_id) DO NOTHING RETURNING *;`;
     return await pg
       .query(sql, [alertId, userId])
       .then(result => {
