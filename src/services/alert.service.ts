@@ -153,7 +153,23 @@ export class AlertService {
   async getAlertByGroupId(groupId: number): Promise<Group | boolean | NodeJS.ErrnoException> {
     const sql = `SELECT alerts.*, alerts_status.status as status,
                         users.name as user_name,
-                        groups.name as group_name
+                        groups.name as group_name,
+                        COALESCE(
+                          JSON_AGG(
+                            DISTINCT JSONB_BUILD_OBJECT(
+                                'name', users_responded.name,
+                                'response_time', responded_by.time
+                                 )
+                                ) FILTER (WHERE users_responded.id IS NOT NULL), '[]'::JSON
+                        ) AS users_responded,
+                        COALESCE(
+                          JSON_AGG(
+                            DISTINCT JSONB_BUILD_OBJECT(
+                                'name', users_seen.name,
+                                'seen_time', seen_by.time
+                                 )
+                                ) FILTER (WHERE users_seen.id IS NOT NULL), '[]'::JSON
+                        ) AS users_seen
                  FROM alerts
                         JOIN alerts_type on alerts.type_id = alerts_type.id
                         JOIN alerts_status on alerts.status_id = alerts_status.id
@@ -161,7 +177,12 @@ export class AlertService {
                         JOIN users ON users.id = devices.user_id
                         JOIN users_groups ON users_groups.user_id = users.id
                         JOIN groups ON users_groups.group_id = groups.id
-                WHERE users_groups.group_id = $1;`;
+                       LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
+                       LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
+                       LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
+                       LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
+                WHERE users_groups.group_id = $1
+                 GROUP BY alerts.id, alerts_status.status, users.name, groups.name;`;
 
     return await pg
       .query(sql, [groupId])
@@ -172,18 +193,38 @@ export class AlertService {
   }
 
   async getAllAlerts(user_id: number) {
-    const sql = `SELECT DISTINCT alerts.*,
-                                 u.name as user_name,
-                                 groups.name as group_name
-                                 FROM alerts
-                                        JOIN alerts_type on alerts.type_id = alerts_type.id
-                                        JOIN alerts_status on alerts.status_id = alerts_status.id
-                                        JOIN devices ON alerts.triggering_device_id = devices.id
-                                        JOIN users_groups ON devices.user_id = users_groups.user_id
-                                        JOIN users as u on users_groups.user_id = u.id
-                                        JOIN ( SELECT * FROM users_groups WHERE user_id = $1 ) g_id ON g_id.group_id = users_groups.group_id
-                                        JOIN groups on g_id.group_id = groups.id;`;
-
+    const sql = `SELECT  alerts.*,
+                u.name as user_name,
+                groups.name as group_name,
+                COALESCE(
+                                JSON_AGG(
+                                DISTINCT JSONB_BUILD_OBJECT(
+                                        'name', users_responded.name,
+                                        'response_time', responded_by.time
+                                         )
+                                        ) FILTER (WHERE users_responded.id IS NOT NULL), '[]'::JSON
+                ) AS users_responded,
+                COALESCE(
+                                JSON_AGG(
+                                DISTINCT JSONB_BUILD_OBJECT(
+                                        'name', users_seen.name,
+                                        'seen_time', seen_by.time
+                                         )
+                                        ) FILTER (WHERE users_seen.id IS NOT NULL), '[]'::JSON
+                ) AS users_seen
+              FROM alerts
+                       JOIN alerts_type on alerts.type_id = alerts_type.id
+                       JOIN alerts_status on alerts.status_id = alerts_status.id
+                       JOIN devices ON alerts.triggering_device_id = devices.id
+                       JOIN users_groups ON devices.user_id = users_groups.user_id
+                       JOIN users as u on users_groups.user_id = u.id
+                       JOIN ( SELECT * FROM users_groups WHERE user_id = 6) g_id ON g_id.group_id = users_groups.group_id
+                       JOIN groups on g_id.group_id = groups.id
+                       LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
+                       LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
+                       LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
+                       LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
+              GROUP BY alerts.id, alerts_status.status, u.name, groups.name;`;
     return await pg
       .query(sql, [user_id])
       .then(result => {
