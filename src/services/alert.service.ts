@@ -29,6 +29,7 @@ export class AlertService {
     return await pg
       .query(sql, [alertId, userId])
       .then(result => {
+        console.log("RespondedBy create service result: ", result);
         if (result.rowCount > 0) {
           return result.rows[0];
         }
@@ -218,7 +219,7 @@ export class AlertService {
                        JOIN devices ON alerts.triggering_device_id = devices.id
                        JOIN users_groups ON devices.user_id = users_groups.user_id
                        JOIN users as u on users_groups.user_id = u.id
-                       JOIN ( SELECT * FROM users_groups WHERE user_id = 6) g_id ON g_id.group_id = users_groups.group_id
+                       JOIN ( SELECT * FROM users_groups WHERE user_id = $1) g_id ON g_id.group_id = users_groups.group_id
                        JOIN groups on g_id.group_id = groups.id
                        LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
                        LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id

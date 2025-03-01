@@ -10,9 +10,7 @@ export class AlertController {
    try {
      const userId = req.body.user_id;
      const alertId = req.body.alert_id;
-
-     console.log("testing Controller createAlertSeenBy crash")
-     this.alertService.createAlertSeenBy(userId, alertId).then(result => {
+     this.alertService.createAlertSeenBy(alertId, userId).then(result => {
        if (result) {
          res.status(200).json(result)
        }
@@ -28,7 +26,7 @@ export class AlertController {
       const alertId = req.body.alert_id;
 
       console.log("testing Controller createAlertRespondingBy crash")
-      this.alertService.createAlertRespondedBy(userId, alertId).then(result => {
+      this.alertService.createAlertRespondedBy(alertId, userId).then(result => {
         if (result) {
           res.status(200).json(result)
         }
