@@ -112,7 +112,8 @@ export class AlertService {
                         alerts_status.status as status,  -- Ensure this is in GROUP BY
                         users.name AS user_name,
                         groups.name AS group_name,
-                        COALESCE(
+                        users.id as created_by_user_id,
+                   COALESCE(
                           JSON_AGG(
                             DISTINCT JSONB_BUILD_OBJECT(
                                 'name', users_responded.name,
@@ -141,7 +142,7 @@ export class AlertService {
                         LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
                  WHERE users_groups.group_id = $2
                    AND alerts.recurring_alert_end_user_id = $1
-                 GROUP BY alerts.id, alerts_status.status, users.name, groups.name;`;
+                 GROUP BY alerts.id, alerts_status.status, users.name, users.id, groups.name;`;
 
     return await pg
       .query(sql, [userId, groupId])
@@ -155,6 +156,7 @@ export class AlertService {
     const sql = `SELECT alerts.*, alerts_status.status as status,
                         users.name as user_name,
                         groups.name as group_name,
+                        users.id as created_by_user_id,
                         COALESCE(
                           JSON_AGG(
                             DISTINCT JSONB_BUILD_OBJECT(
@@ -183,7 +185,7 @@ export class AlertService {
                        LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
                        LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
                 WHERE users_groups.group_id = $1
-                 GROUP BY alerts.id, alerts_status.status, users.name, groups.name;`;
+                 GROUP BY alerts.id, alerts_status.status, users.name, users.id, groups.name;`;
 
     return await pg
       .query(sql, [groupId])
@@ -197,7 +199,8 @@ export class AlertService {
     const sql = `SELECT  alerts.*,
                 u.name as user_name,
                 groups.name as group_name,
-                COALESCE(
+                u.id as created_by_user_id,
+                   COALESCE(
                                 JSON_AGG(
                                 DISTINCT JSONB_BUILD_OBJECT(
                                         'name', users_responded.name,
@@ -225,7 +228,7 @@ export class AlertService {
                        LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
                        LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
                        LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
-              GROUP BY alerts.id, alerts_status.status, u.name, groups.name;`;
+              GROUP BY alerts.id, alerts_status.status, u.name, u.id , groups.name;`;
     return await pg
       .query(sql, [user_id])
       .then(result => {
