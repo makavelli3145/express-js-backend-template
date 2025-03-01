@@ -5,6 +5,37 @@ import { AlertService } from '@services/alert.service';
 
 export class AlertController {
   public alertService = Container.get(AlertService);
+
+  public createAlertSeenBy = (req: Request, res: Response, next: NextFunction)=> {
+   try {
+     const userId = req.body.user_id;
+     const alertId = req.body.alert_id;
+     this.alertService.createAlertSeenBy(alertId, userId).then(result => {
+       if (result) {
+         res.status(200).json(result)
+       }
+     });
+   }catch(err) {
+     res.status(500).json({'createAlertSeenBy has failed': err});
+   }
+  }
+
+  public createAlertRespondedBy = (req: Request, res: Response, next: NextFunction)=> {
+    try {
+      const userId = req.body.user_id;
+      const alertId = req.body.alert_id;
+
+      console.log("testing Controller createAlertRespondingBy crash")
+      this.alertService.createAlertRespondedBy(alertId, userId).then(result => {
+        if (result) {
+          res.status(200).json(result)
+        }
+      });
+    }catch(err) {
+      res.status(500).json({'createAlertSeenBy has failed': err});
+    }
+  }
+
   public createAlert = (req: Request, res: Response, next: NextFunction) => {
     try {
       const alert: Alert = req.body;
@@ -94,7 +125,6 @@ export class AlertController {
         try {
           const user_id = req.session.userId;
           this.alertService.getAllAlerts(user_id).then(result => {
-            console.log(result);
             if (result) {
               res.status(200).json(result);
             } else {
