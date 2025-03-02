@@ -43,3 +43,22 @@ export class UpdateAlertDto extends CreateAlertDto {
 }
 
 export class DeleteAlertDto extends UpdateAlertDto {}
+
+export class CreateAlertRespondingByDto{
+  @IsNumber()
+  @IsNotEmpty()
+  public user_id: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  public alert_id: number;
+}
+export class CreateAlertSeenByDto{
+  @IsNumber()
+  @IsNotEmpty()
+  public user_id: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  public alert_id: number;
+}
