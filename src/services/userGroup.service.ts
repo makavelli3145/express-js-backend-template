@@ -109,18 +109,31 @@ export class UserGroupService {
 
         await pg.query(
           `UPDATE users_groups
-         SET roles_permissions_id = 2
-         WHERE roles_permissions_id = 4 and EXISTS (
-           SELECT MIN(user_id) FROM users_groups WHERE group_id = $1 AND roles_permissions_id = 4)`,
+           SET roles_permissions_id = 2
+           WHERE id = (
+             SELECT id FROM users_groups
+             WHERE group_id = $1 AND roles_permissions_id = 4
+             ORDER BY user_id ASC
+             LIMIT 1
+             )
+             RETURNING *;`,
           [group_id],
         );
 
         await pg.query(
           `DELETE FROM groups WHERE id = $1 AND NOT EXISTS (
-           SELECT 1 FROM users_groups WHERE users_groups.group_id = $1 AND users_groups.roles_permissions_id != 3
-         )  RETURNING *`,
+            SELECT 1 FROM users_groups WHERE users_groups.group_id = $1 AND users_groups.roles_permissions_id != 3
+          )  RETURNING *`,
           [group_id],
         );
+
+        //TODO: Delete all user groups that are associated with the deleted group
+        // await pg.query(
+        //   `DELETE FROM users_groups WHERE group_id = $1 AND NOT EXISTS (
+        //    SELECT 1 FROM users_groups WHERE users_groups.group_id = $1 AND users_groups.roles_permissions_id != 3
+        //  )  RETURNING *`,
+        //   [group_id],
+        // );
 
         return deletedUserGroupResult;
       } catch (err) {
