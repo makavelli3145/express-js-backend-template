@@ -25,7 +25,6 @@ export class AlertController {
       const userId = req.body.user_id;
       const alertId = req.body.alert_id;
 
-      console.log("testing Controller createAlertRespondingBy crash")
       this.alertService.createAlertRespondedBy(alertId, userId).then(result => {
         if (result) {
           res.status(200).json(result)
