@@ -36,10 +36,30 @@ export class CreateAlertDto {
   public recurring_alert_end_user_id?: number;
 }
 
-export class UpdateAlertDto extends CreateAlertDto {
+export class UpdateAlertDto{
   @IsNumber()
   @IsNotEmpty()
   public id: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  public status_id: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  public type_id: number;
+
+  @IsString()
+  @IsOptional()
+  @Matches(/^[A-Z][a-z]+\s\d{2}:\d{2}$/, {
+    message: 'alert schedule time must be a string in the format <day> <HH:MM>',
+  })
+  public alert_scheduled_time?: string;
+
+  @IsString()
+  @IsOptional()
+  public message?: string;
+
 }
 
 export class DeleteAlertDto extends UpdateAlertDto {}
