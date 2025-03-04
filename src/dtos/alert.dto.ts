@@ -62,7 +62,11 @@ export class UpdateAlertDto{
 
 }
 
-export class DeleteAlertDto extends UpdateAlertDto {}
+export class DeleteAlertDto{
+  @IsNumber()
+  @IsNotEmpty()
+  public id: number;
+}
 
 export class CreateAlertRespondingByDto{
   @IsNumber()
