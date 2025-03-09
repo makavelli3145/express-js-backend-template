@@ -92,7 +92,7 @@ export class AlertService {
 
   async deleteAlert(alert: Alert): Promise<Alert | boolean | NodeJS.ErrnoException> {
     const { id } = alert;
-    const sql = `Delete FROM alerts where id = $1 RETURNING *;`;
+    const sql = `Delete FROM push_notifications where alert_id = $1 RETURNING *;`;
     return await pg
       .query(sql, [id])
       .then(result => {
