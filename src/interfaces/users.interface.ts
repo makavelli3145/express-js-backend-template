@@ -4,4 +4,7 @@ export interface User {
   pin: string;
   name: string;
   id?: number;
+  email?: string;
+  phone_number?: string;
+  address?: string;
 }
