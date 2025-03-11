@@ -29,7 +29,6 @@ export class AlertService {
     return await pg
       .query(sql, [alertId, userId])
       .then(result => {
-        console.log("RespondedBy create service result: ", result);
         if (result.rowCount > 0) {
           return result.rows[0];
         }
@@ -53,7 +52,6 @@ export class AlertService {
 
   public updateAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
     const { status_id, type_id, alert_scheduled_time, message, id } = alert;
-    console.log("alert in the update alert service: ", alert)
     if(alert_scheduled_time) {
       const sql = `
         UPDATE alerts
@@ -94,7 +92,7 @@ export class AlertService {
 
   async deleteAlert(alert: Alert): Promise<Alert | boolean | NodeJS.ErrnoException> {
     const { id } = alert;
-    const sql = `Delete FROM alerts where id = $1 RETURNING *;`;
+    const sql = `Delete FROM push_notifications where alert_id = $1 RETURNING *;`;
     return await pg
       .query(sql, [id])
       .then(result => {
