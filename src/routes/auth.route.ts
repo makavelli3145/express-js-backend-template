@@ -21,5 +21,6 @@ export class AuthRoute implements Routes {
     this.router.post('/auth/deRegisterUser', AuthMiddleware, ValidationMiddleware(DeleteUserDto), this.auth.deRegisterUser);
     this.router.post('/auth/deRegisterDevice', AuthMiddleware, ValidationMiddleware(DeleteDeviceDto), this.auth.deregisterDevice);
     this.router.post('/auth/logout', AuthMiddleware, this.auth.logout);
+    this.router.put('/auth/updated', AuthMiddleware, this.auth.update);
   }
 }
