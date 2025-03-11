@@ -20,10 +20,17 @@ SET row_security = off;
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
--- *not* creating schema, since initdb creates it
+CREATE SCHEMA public;
 
 
 ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
 
 --
 -- Name: alert_insert(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -681,7 +688,10 @@ CREATE TABLE public.users (
     role_id integer DEFAULT 0 NOT NULL,
     pin text NOT NULL,
     name text NOT NULL,
-    created timestamp without time zone DEFAULT now() NOT NULL
+    created timestamp without time zone DEFAULT now() NOT NULL,
+    email text,
+    phone_number text,
+    address text
 );
 
 
@@ -862,169 +872,224 @@ ALTER TABLE ONLY public.users_groups ALTER COLUMN id SET DEFAULT nextval('public
 -- Data for Name: alerts; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.alerts VALUES (32, '2025-01-09 13:26:36.037013', '37.4220936|-122.083922', 5, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 13:33:09.861828', '37.4220936|-122.083922', 6, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 13:33:59.084405', '37.4220936|-122.083922', 7, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 13:33:59.663187', '37.4220936|-122.083922', 8, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 13:35:21.95903', '37.4220936|-122.083922', 9, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 13:37:01.447499', '37.4220936|-122.083922', 10, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 13:37:01.981712', '37.4220936|-122.083922', 11, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 13:39:41.760585', '37.4220936|-122.083922', 12, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.alerts VALUES (30, '2025-01-01 13:41:41.573', '37.4220936|-122.083922', 4, 3, NULL, 1, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 14:24:37.790345', '37.4220936|-122.083922', 13, 3, NULL, 1, NULL, NULL);
-INSERT INTO public.alerts VALUES (32, '2025-01-09 14:32:16.636866', '37.4220936|-122.083922', 14, 2, NULL, 1, NULL, NULL);
+COPY public.alerts (triggering_device_id, "time", location, id, status_id, message, type_id, alert_scheduled_time, recurring_alert_end_user_id) FROM stdin;
+34	2025-03-09 11:35:06.914774	37.4219983|-122.084	16	2	\N	1	\N	15
+50	2025-03-09 12:52:05.32085	-27.80133|30.1094383	45	2	\N	1	\N	15
+47	2025-03-09 13:01:56.760257	-26.1392265|28.395892	46	2	\N	1	\N	17
+47	2025-03-09 13:13:12.551629	-26.1392265|28.395892	47	2	\N	1	\N	17
+47	2025-03-09 13:13:12.696398	-26.1392265|28.395892	48	2	\N	1	\N	17
+47	2025-03-09 13:13:12.959304	-26.1392265|28.395892	49	2	\N	1	\N	17
+47	2025-03-09 13:13:13.351787	-26.1392265|28.395892	50	2	\N	1	\N	17
+47	2025-03-09 13:13:15.031545	-26.1392265|28.395892	51	2	\N	1	\N	17
+52	2025-03-09 13:41:16.40131	-26.1392372|28.3958907	52	2	\N	1	\N	17
+56	2025-03-10 13:01:41.93371	37.4219983|-122.084	53	3	\N	1	\N	15
+50	2025-03-09 12:48:23.742479	-27.80133|30.1094383	44	2	\N	1	\N	15
+33	2025-03-09 11:17:08.933782	37.4219983|-122.084	15	2	\N	1	\N	15
+34	2025-03-09 11:35:15.613369	37.4219983|-122.084	17	2	\N	1	\N	15
+43	2025-03-09 12:18:26.348137	-27.801425|30.1094983	31	1	\N	1	\N	15
+43	2025-03-09 12:18:33.635305	-27.801425|30.1094983	32	2	\N	1	\N	15
+45	2025-03-09 12:24:04.848297	-26.1392286|28.3958951	33	2	\N	1	\N	17
+45	2025-03-09 12:24:32.676365	-26.1392267|28.3958927	35	2	\N	1	\N	17
+45	2025-03-09 12:25:04.263202	-26.1392267|28.3958927	36	2	\N	1	\N	17
+\.
 
 
 --
 -- Data for Name: alerts_status; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.alerts_status VALUES (1, 'ongoing');
-INSERT INTO public.alerts_status VALUES (2, 'resolved');
-INSERT INTO public.alerts_status VALUES (3, 'cancelled');
+COPY public.alerts_status (id, status) FROM stdin;
+1	ongoing
+2	resolved
+3	cancelled
+\.
 
 
 --
 -- Data for Name: alerts_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.alerts_type VALUES (1, 'emergency');
-INSERT INTO public.alerts_type VALUES (2, 'recurring');
+COPY public.alerts_type (id, type) FROM stdin;
+1	emergency
+2	recurring
+\.
 
 
 --
 -- Data for Name: devices; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.devices VALUES (6, '123456789', 5, '2024-06-17 16:20:17.652344', '123456');
-INSERT INTO public.devices VALUES (8, 'c2b9c2f7-7297-47ee-ba95-8a96836f604f', 6, '2024-10-24 17:49:29.775043', NULL);
-INSERT INTO public.devices VALUES (24, '326ca8b5-a402-42c9-9d04-e3850f2fb08c', 14, '2025-01-02 11:21:01.470276', NULL);
-INSERT INTO public.devices VALUES (25, 'ec57ebe6-8168-4c1b-a3fb-5b38fa47a037', 14, '2025-01-02 11:23:33.129046', NULL);
-INSERT INTO public.devices VALUES (26, '28e05d9c-ff62-4534-b38c-d22603085be1', 14, '2025-01-02 11:26:16.16419', NULL);
-INSERT INTO public.devices VALUES (27, '73b08675-8b12-4762-89c4-271bfc33ef97', 14, '2025-01-02 11:27:48.336042', NULL);
-INSERT INTO public.devices VALUES (28, 'f42e2617-aaad-486a-b7c9-a5dd431fb7ba', 14, '2025-01-02 11:29:00.405796', NULL);
-INSERT INTO public.devices VALUES (29, '2d4ccee5-ab5a-4cf7-8924-0b8a1eea7ba6', 14, '2025-01-02 11:30:35.204627', NULL);
-INSERT INTO public.devices VALUES (30, 'c1a09368-0a7f-46f0-a930-b89033f90a59', 14, '2025-01-02 11:31:27.213744', NULL);
-INSERT INTO public.devices VALUES (31, '94a490c9-21a8-43d1-b0ac-b763f27ffba9', 14, '2025-01-04 14:48:45.50924', NULL);
-INSERT INTO public.devices VALUES (32, '81c311cc-d836-4f44-91a9-3d0c717d6c67', 14, '2025-01-09 13:24:19.941176', NULL);
+COPY public.devices (id, device_uuid, user_id, created, push_token) FROM stdin;
+33	100f67ad-c1a7-4c20-9803-05d8252fb623	15	2025-03-09 11:16:53.815093	\N
+34	38fd3fff-9d8e-41cb-b835-e932443beadf	15	2025-03-09 11:34:36.044083	\N
+43	e44b46c7-701a-4e2b-ac6d-9195208318a7	15	2025-03-09 12:18:07.498292	\N
+44	3be1cdc3-8edd-4557-99f2-1866b1908098	17	2025-03-09 12:23:08.024088	\N
+45	38651935-2058-4bf7-978d-701201bdcc96	17	2025-03-09 12:23:57.761894	\N
+47	1b8c76f1-1160-42d0-963e-f4097ced20e9	17	2025-03-09 12:47:31.242258	\N
+48	313f8817-79ce-40c0-aeb6-ae3b3154bd18	15	2025-03-09 12:47:32.958799	\N
+49	5d7a8984-a530-40e5-9b0e-871b941cc800	17	2025-03-09 12:47:36.257694	\N
+50	1fc5f10c-c803-466d-b424-8c128e709b21	15	2025-03-09 12:48:19.929045	\N
+51	a121a945-4e38-4e5c-a278-b976db58f28e	18	2025-03-09 12:58:42.844681	\N
+52	fd96b8fc-b21e-4684-812f-06475279e51a	17	2025-03-09 13:41:06.854336	\N
+53	ab90c472-c5d4-4620-91ed-81b47b2b3e5d	17	2025-03-09 13:41:08.332944	\N
+54	8150dac2-f88e-496e-ad86-a301f10433cc	15	2025-03-10 08:57:45.520125	\N
+55	7faef345-a0f7-4192-b4d6-9dabc3d021cc	15	2025-03-10 12:06:13.979015	\N
+56	1a59b324-cbe0-4da1-b44c-6df7c755c2b7	15	2025-03-10 13:01:32.393399	\N
+57	26ff1ec4-9f05-4543-875b-b1a4ad01d302	15	2025-03-10 13:21:27.084835	\N
+58	2dd756c8-734b-4e1d-b60e-09c3cba2f3e5	15	2025-03-11 07:44:49.23991	\N
+59	dd9a57fe-f5c0-4663-99bc-e8b0719024e8	15	2025-03-11 08:40:02.475439	\N
+60	e4e0468b-16d7-4e26-9259-feb5f9e20c24	15	2025-03-11 08:42:56.25561	\N
+61	28698179-96d3-4081-838f-c37ab4471377	15	2025-03-11 12:05:53.18846	\N
+62	1b8c1c41-93fe-4b6a-989e-bf8b94a1a6d3	15	2025-03-11 12:08:16.333947	\N
+\.
 
 
 --
 -- Data for Name: groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.groups VALUES (3, 'test2', 5, '2024-06-17 16:20:41.127677', NULL);
-INSERT INTO public.groups VALUES (54, 'mak''s gay friends', 6, '2024-10-24 17:50:53.119149', 'XT6-YUJ-678');
-INSERT INTO public.groups VALUES (6, 'test3', 5, '2024-10-16 18:12:04.135854', 'XT6-YUJ-688');
-INSERT INTO public.groups VALUES (55, 'Poes Lovers Anonymous ', 14, '2025-01-03 10:57:21.967945', '2X2-MEN-GL1');
-INSERT INTO public.groups VALUES (56, 'Lovers of thick woman', 14, '2025-01-03 11:43:44.205324', '53A-7X5-533');
+COPY public.groups (id, name, created_by_user_id, created, identification_string) FROM stdin;
+57	Tesla	15	2025-03-09 11:17:32.100158	BH7-3NX-K74
+59	Brian	17	2025-03-09 12:24:25.72473	W7Q-00F-877
+\.
 
 
 --
 -- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.permissions VALUES (1, 'user', '2024-06-15');
+COPY public.permissions (id, name, created) FROM stdin;
+1	user	2024-06-15
+\.
 
 
 --
 -- Data for Name: push_notification_jobs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.push_notification_jobs VALUES (1, 2, true, false, false, NULL, '2024-06-20 09:32:56.449973', '2024-06-20 08:54:09.589491', 0);
-INSERT INTO public.push_notification_jobs VALUES (2, 2, true, false, false, NULL, '2024-10-16 17:46:00.168803', '2024-06-20 09:32:40.595614', 0);
+COPY public.push_notification_jobs (id, push_id, completed, pending, failed, error, completed_at, created_at, retry_attempt) FROM stdin;
+\.
 
 
 --
 -- Data for Name: push_notification_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.push_notification_type VALUES (1, 'emergency alert', 1200, 0, false);
-INSERT INTO public.push_notification_type VALUES (2, 'wake device', 1200, 1, false);
-INSERT INTO public.push_notification_type VALUES (3, 'checkin', 1200, 0, false);
+COPY public.push_notification_type (id, name, ttl, priority, mutable_content) FROM stdin;
+1	emergency alert	1200	0	f
+2	wake device	1200	1	f
+3	checkin	1200	0	f
+\.
 
 
 --
 -- Data for Name: push_notifications; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.push_notifications VALUES (2, '{"body":"test"}', 'test', 'test', 1, NULL);
-INSERT INTO public.push_notifications VALUES (6, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-03 13:41:41.573084', 1, 4);
-INSERT INTO public.push_notifications VALUES (7, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 13:26:36.037013', 1, 5);
-INSERT INTO public.push_notifications VALUES (8, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 13:33:09.861828', 1, 6);
-INSERT INTO public.push_notifications VALUES (9, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 13:33:59.084405', 1, 7);
-INSERT INTO public.push_notifications VALUES (10, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 13:33:59.663187', 1, 8);
-INSERT INTO public.push_notifications VALUES (11, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 13:35:21.95903', 1, 9);
-INSERT INTO public.push_notifications VALUES (12, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 13:37:01.447499', 1, 10);
-INSERT INTO public.push_notifications VALUES (13, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 13:37:01.981712', 1, 11);
-INSERT INTO public.push_notifications VALUES (14, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 13:39:41.760585', 1, 12);
-INSERT INTO public.push_notifications VALUES (15, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 14:24:37.790345', 1, 13);
-INSERT INTO public.push_notifications VALUES (16, NULL, 'Alert triggered', 'An alert was triggered by Callan at 2025-01-09 14:32:16.636866', 1, 14);
+COPY public.push_notifications (id, data, title, body, push_notification_type_id, alert_id) FROM stdin;
+48	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 13:01:56.760257	1	46
+49	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 13:13:12.551629	1	47
+50	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 13:13:12.696398	1	48
+51	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 13:13:12.959304	1	49
+52	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 13:13:13.351787	1	50
+53	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 13:13:15.031545	1	51
+54	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 13:41:16.40131	1	52
+55	\N	Alert triggered	An alert was triggered by Elon Musk at 2025-03-10 13:01:41.93371	1	53
+17	\N	Alert triggered	An alert was triggered by Elon Musk at 2025-03-09 11:17:08.933782	1	15
+18	\N	Alert triggered	An alert was triggered by Elon Musk at 2025-03-09 11:35:06.914774	1	16
+19	\N	Alert triggered	An alert was triggered by Elon Musk at 2025-03-09 11:35:15.613369	1	17
+33	\N	Alert triggered	An alert was triggered by Elon Musk at 2025-03-09 12:18:26.348137	1	31
+34	\N	Alert triggered	An alert was triggered by Elon Musk at 2025-03-09 12:18:33.635305	1	32
+35	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 12:24:04.848297	1	33
+37	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 12:24:32.676365	1	35
+38	\N	Alert triggered	An alert was triggered by Brian at 2025-03-09 12:25:04.263202	1	36
+46	\N	Alert triggered	An alert was triggered by Elon Musk at 2025-03-09 12:48:23.742479	1	44
+47	\N	Alert triggered	An alert was triggered by Elon Musk at 2025-03-09 12:52:05.32085	1	45
+\.
 
 
 --
 -- Data for Name: push_notifications_users_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.push_notifications_users_groups (id, push_notification_jobs_id, users_groups_id) FROM stdin;
+\.
 
 
 --
 -- Data for Name: responded_by; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.responded_by (id, alert_id, user_id, "time") FROM stdin;
+\.
 
 
 --
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.roles VALUES (1, 'user');
-INSERT INTO public.roles VALUES (2, 'group_admin');
-INSERT INTO public.roles VALUES (3, 'group_pending');
-INSERT INTO public.roles VALUES (4, 'group_user');
+COPY public.roles (id, role_name) FROM stdin;
+1	user
+2	group_admin
+3	group_pending
+4	group_user
+\.
 
 
 --
 -- Data for Name: roles_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.roles_permissions VALUES (1, 1, 1);
-INSERT INTO public.roles_permissions VALUES (2, 2, 1);
-INSERT INTO public.roles_permissions VALUES (3, 3, 1);
-INSERT INTO public.roles_permissions VALUES (4, 4, 1);
+COPY public.roles_permissions (id, role_id, permission_id) FROM stdin;
+1	1	1
+2	2	1
+3	3	1
+4	4	1
+\.
 
 
 --
 -- Data for Name: seen_by; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.seen_by (id, user_id, alert_id, "time") FROM stdin;
+1	15	15	2025-03-09 11:20:30.375297
+2	15	16	2025-03-09 11:35:23.097129
+3	15	17	2025-03-09 11:35:28.047805
+5	17	33	2025-03-09 12:32:10.557409
+6	17	35	2025-03-09 12:32:39.531638
+8	15	32	2025-03-09 12:38:21.952029
+9	17	46	2025-03-09 13:41:24.864868
+\.
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.users VALUES (5, '9905205061080', 1, '011895', 'random', '2024-06-17 16:19:56.477872');
-INSERT INTO public.users VALUES (6, '9812055281082', 1, '9808', 'gay boy', '2024-10-24 17:49:29.762936');
-INSERT INTO public.users VALUES (14, '9501185061080', 1, '0118', 'Callan', '2025-01-02 11:21:01.467056');
+COPY public.users (id, id_number, role_id, pin, name, created, email, phone_number, address) FROM stdin;
+15	9812055281082	1	9808	Elon Musk	2025-03-09 11:16:53.798522	\N	\N	\N
+17	7203065001086	1	1972	Brian	2025-03-09 12:23:08.018277	\N	\N	\N
+18	9501185061080	1	0118	Callan	2025-03-09 12:58:42.841783	\N	\N	\N
+\.
 
 
 --
 -- Data for Name: users_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.users_groups VALUES (3, 5, 2, '2024-06-17 16:21:19.054075', 4);
-INSERT INTO public.users_groups VALUES (6, 5, 4, '2024-10-16 18:12:04.135854', 6);
-INSERT INTO public.users_groups VALUES (54, 6, 2, '2024-10-24 17:52:11.816624', 60);
-INSERT INTO public.users_groups VALUES (55, 14, 2, '2025-01-03 10:57:21.967945', 64);
-INSERT INTO public.users_groups VALUES (56, 14, 2, '2025-01-03 11:43:44.205324', 65);
+COPY public.users_groups (group_id, user_id, roles_permissions_id, created, id) FROM stdin;
+57	15	2	2025-03-09 11:17:32.100158	66
+59	17	2	2025-03-09 12:24:25.72473	68
+59	18	4	2025-03-09 12:59:43.329746	71
+\.
 
 
 --
 -- Name: alerts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.alerts_id_seq', 14, true);
+SELECT pg_catalog.setval('public.alerts_id_seq', 53, true);
 
 
 --
@@ -1045,14 +1110,14 @@ SELECT pg_catalog.setval('public.alerts_type_id_seq', 2, true);
 -- Name: devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.devices_id_seq', 32, true);
+SELECT pg_catalog.setval('public.devices_id_seq', 62, true);
 
 
 --
 -- Name: groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.groups_id_seq', 56, true);
+SELECT pg_catalog.setval('public.groups_id_seq', 60, true);
 
 
 --
@@ -1080,7 +1145,7 @@ SELECT pg_catalog.setval('public.push_notification_type_id_seq', 3, true);
 -- Name: push_notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.push_notifications_id_seq', 16, true);
+SELECT pg_catalog.setval('public.push_notifications_id_seq', 55, true);
 
 
 --
@@ -1108,7 +1173,7 @@ SELECT pg_catalog.setval('public.roles_id_seq', 4, true);
 -- Name: seen_by_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.seen_by_id_seq', 1, false);
+SELECT pg_catalog.setval('public.seen_by_id_seq', 10, true);
 
 
 --
@@ -1122,14 +1187,14 @@ SELECT pg_catalog.setval('public.user_permissions_id_seq', 4, true);
 -- Name: users_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_groups_id_seq', 65, true);
+SELECT pg_catalog.setval('public.users_groups_id_seq', 71, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 14, true);
+SELECT pg_catalog.setval('public.users_id_seq', 18, true);
 
 
 --
@@ -1245,6 +1310,22 @@ ALTER TABLE ONLY public.seen_by
 
 
 --
+-- Name: responded_by unique_alert_user_responded; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.responded_by
+    ADD CONSTRAINT unique_alert_user_responded UNIQUE (alert_id, user_id);
+
+
+--
+-- Name: seen_by unique_alert_user_seen; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.seen_by
+    ADD CONSTRAINT unique_alert_user_seen UNIQUE (alert_id, user_id);
+
+
+--
 -- Name: users_groups users_groups_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1258,6 +1339,22 @@ ALTER TABLE ONLY public.users_groups
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pk PRIMARY KEY (id);
+
+
+--
+-- Name: users users_pk_2; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pk_2 UNIQUE (email);
+
+
+--
+-- Name: users users_pk_3; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pk_3 UNIQUE (phone_number);
 
 
 --
@@ -1336,7 +1433,7 @@ ALTER TABLE ONLY public.alerts
 --
 
 ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_users_id_fk FOREIGN KEY (recurring_alert_end_user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT alerts_users_id_fk FOREIGN KEY (recurring_alert_end_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -1368,7 +1465,7 @@ ALTER TABLE ONLY public.push_notification_jobs
 --
 
 ALTER TABLE ONLY public.push_notifications
-    ADD CONSTRAINT push_notifications_alerts_id_fk FOREIGN KEY (alert_id) REFERENCES public.alerts(id);
+    ADD CONSTRAINT push_notifications_alerts_id_fk FOREIGN KEY (alert_id) REFERENCES public.alerts(id) ON DELETE CASCADE;
 
 
 --
@@ -1408,7 +1505,7 @@ ALTER TABLE ONLY public.responded_by
 --
 
 ALTER TABLE ONLY public.responded_by
-    ADD CONSTRAINT responded_by_users_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT responded_by_users_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -1440,7 +1537,7 @@ ALTER TABLE ONLY public.seen_by
 --
 
 ALTER TABLE ONLY public.seen_by
-    ADD CONSTRAINT seen_by_users_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT seen_by_users_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
