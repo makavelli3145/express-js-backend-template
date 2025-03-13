@@ -71,10 +71,10 @@ export class UserService {
   }
 
   public async updateUser(user: User, id: number): Promise<User | boolean | NodeJS.ErrnoException> {
-    const { email, phone_number, address} = user;
-    const sql = `UPDATE users SET email = $1, phone_number = $2, address = $3 where id = $4 RETURNING *`;
+    const { email, phone_number, address, emergency_contact_number, emergency_contact_name} = user;
+    const sql = `UPDATE users SET email = $1, phone_number = $2, address = $3, emergency_contact_name=$4, emergency_contact_number=$5 where id = $6 RETURNING *`;
     return await pg
-      .query(sql, [email, phone_number, address, id])
+      .query(sql, [email, phone_number, address,emergency_contact_name, emergency_contact_number, id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];
