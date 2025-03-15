@@ -109,6 +109,22 @@ export class DeleteUserDto {
   public id: number;
 }
 
+export class UpdateUserDto {
+  @IsNotEmpty()
+  @IsString()
+  public email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  public phone_number: string;
+
+  @IsNotEmpty()
+  @IsString()
+  public address: string;
+
+
+}
+
 export class LoginUserDto {
   @IsNotEmpty()
   @IsNumber()

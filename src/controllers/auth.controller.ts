@@ -117,6 +117,20 @@ export class AuthController {
     }
   };
 
+  public update = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+    const user: User = req.body;
+    const id: number = req.session.userId;
+    try{
+      this.userService.updateUser(user, id).then(result => {
+        if (result) {
+          res.status(200).send(result);
+        }
+      })
+    }catch(error){
+      next(error);
+    }
+  }
+
   public logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     req.session.destroy(err => {
       if (err) {
