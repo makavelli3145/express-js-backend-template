@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import pg from '../database/index';
 export const AuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    console.log("req.session: ", req.session)
   if (req.session && req.session.userId) {
     next();
   } else {
