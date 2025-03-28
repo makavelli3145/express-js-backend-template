@@ -139,5 +139,7 @@ export class AuthController {
       res.clearCookie('connect.sid'); // Clear the session cookie
       res.json({ message: 'Logged out successfully' });
     });
+
+    console.log("session: ", req.session)
   };
 }
