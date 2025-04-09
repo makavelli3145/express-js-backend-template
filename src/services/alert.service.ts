@@ -36,10 +36,10 @@ export class AlertService {
   }
 
   public createAlert = async (alert: Alert): Promise<Group | boolean | NodeJS.ErrnoException> => {
-    const { device_uuid, location, status_id, type_id , alert_scheduled_time, message, recurring_alert_end_user_id} = alert;
-    const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id, alert_scheduled_time, message, recurring_alert_end_user_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4, $5, $6, $7) RETURNING *;`;
+    const { device_uuid, location, status_id, type_id , alert_scheduled_time, message, recurring_alert_end_user_id, group_id} = alert;
+    const sql = `INSERT INTO alerts (triggering_device_id, location, status_id, type_id, alert_scheduled_time, message, recurring_alert_end_user_id, group_id) VALUES ( (SELECT id FROM devices WHERE device_uuid=$1), $2, $3, $4, $5, $6, $7, $8) RETURNING *;`;
     return await pg
-      .query(sql, [device_uuid, location, status_id, type_id,alert_scheduled_time, message, recurring_alert_end_user_id])
+      .query(sql, [device_uuid, location, status_id, type_id,alert_scheduled_time, message, recurring_alert_end_user_id, group_id])
       .then(result => {
         if (result.rowCount > 0) {
           return result.rows[0];

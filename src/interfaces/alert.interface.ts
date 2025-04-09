@@ -16,4 +16,5 @@ export interface Alert {
     username: string;
     seen_time: string;
   }[];
+  group_id?: number;
 }
