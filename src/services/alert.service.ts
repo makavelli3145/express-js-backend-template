@@ -132,8 +132,7 @@ export class AlertService {
                         JOIN alerts_status on alerts.status_id = alerts_status.id
                         JOIN devices ON devices.id = alerts.triggering_device_id
                         JOIN users ON users.id = devices.user_id
-                        JOIN users_groups ON users_groups.user_id = devices.user_id
-                        JOIN groups ON users_groups.group_id = groups.id
+                        JOIN groups ON alerts.group_id = groups.id
                         LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
                         LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
                         LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
@@ -176,8 +175,7 @@ export class AlertService {
                         JOIN alerts_status on alerts.status_id = alerts_status.id
                         JOIN devices ON devices.id = alerts.triggering_device_id
                         JOIN users ON users.id = devices.user_id
-                        JOIN users_groups ON users_groups.user_id = users.id
-                        JOIN groups ON users_groups.group_id = groups.id
+                        JOIN groups ON alerts.group_id = groups.id
                        LEFT JOIN responded_by ON responded_by.alert_id = alerts.id
                        LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
                        LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
