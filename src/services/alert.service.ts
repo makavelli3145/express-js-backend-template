@@ -138,7 +138,7 @@ export class AlertService {
                         LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
                         LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
                         LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
-                 WHERE users_groups.group_id = $2
+                 WHERE alerts.group_id = $2
                    AND alerts.recurring_alert_end_user_id = $1
                  GROUP BY alerts.id, alerts_status.status, users.name, users.id, groups.name;`;
 
@@ -182,7 +182,7 @@ export class AlertService {
                        LEFT JOIN users AS users_responded ON users_responded.id = responded_by.user_id
                        LEFT JOIN seen_by ON seen_by.alert_id = alerts.id
                        LEFT JOIN users AS users_seen ON users_seen.id = seen_by.user_id
-                WHERE users_groups.group_id = $1
+                WHERE alerts.group_id = $1
                  GROUP BY alerts.id, alerts_status.status, users.name, users.id, groups.name;`;
 
     return await pg
