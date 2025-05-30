@@ -1,13 +1,15 @@
 services:
-  solace-api:
-    container_name: solace-api
+  solace-api-prod:
+    container_name: solace-api-prod
     build:
       context: ./
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
+    profiles:
+      - production
     ports:
       - "3000:3000"
     environment:
-      LOG_FORMAT: dev
+      LOG_FORMAT: prod
       LOG_DIR: /logs
       ORIGIN: "*"
       PORT: 3000
@@ -29,9 +31,45 @@ services:
       - pg-solace
       - redis-solace  # Ensure server depends on Redis
 
+  solace-api-dev:
+    container_name: solace-api-dev
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    profiles:
+      - development
+    ports:
+      - "3000:3000"
+    environment:
+      LOG_FORMAT: dev
+      LOG_DIR: /logs
+      ORIGIN: "*"
+      PORT: 3000
+      SECRET_KEY: secretKey
+      CREDENTIALS: true
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 44*^i33xs7G2V^z%
+      POSTGRES_HOST: pg-solace
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: public
+      REDIS_HOST: redis-solace
+      OTEL_METRICS_EXPORTER: None
+    volumes:
+      - ./:/solace
+      - /solace/node_modules
+      - ./logs:/logs
+    networks:
+      - backend-solace
+    depends_on:
+      - pg-solace
+      - redis-solace  # Ensure server depends on Redis
+
   pg-solace:
     container_name: pg-solace
     image: postgres:14.5-alpine
+    profiles:
+      - development
+      - production
     ports:
       - "5432:5432"
     environment:
@@ -48,6 +86,9 @@ services:
   redis-solace:
     image: redis:latest
     restart: always
+    profiles:
+      - development
+      - production
     ports:
       - "6379:6379"
     volumes:

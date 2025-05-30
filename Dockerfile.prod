@@ -14,4 +14,4 @@ RUN npm install
 ENV NODE_ENV production
 
 # Cmd script
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
